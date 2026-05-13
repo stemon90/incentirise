@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int              @id @default(autoincrement())
+  name         String
+  email        String           @unique
+  points       Int              @default(0)
+  createdAt    DateTime         @default(now())
+  completions  TaskCompletion[]
+  transactions Transaction[]
+}
+
+model Task {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String?
+  points      Int
+  createdAt   DateTime         @default(now())
+  completions TaskCompletion[]
+}
+
+model TaskCompletion {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  taskId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  task      Task     @relation(fields: [taskId], references: [id])
+}
+
+model Reward {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String?
+  pointCost    Int
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  rewardId    Int
+  pointsSpent Int
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  reward      Reward   @relation(fields: [rewardId], references: [id])
+}
