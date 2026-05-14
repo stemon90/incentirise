@@ -25,20 +25,22 @@ A full-stack rewards and accountability platform where users complete tasks to e
 
 ## Project Structure
 
+```
 incentirise/
 ├── backend/
-│ ├── prisma/
-│ │ ├── schema.prisma # Database models
-│ │ └── migrations/ # Migration history
-│ ├── src/
-│ │ ├── index.js # Express server entry point
-│ │ └── routes/ # API route handlers (in progress)
-│ ├── prisma.config.ts # Prisma 7 configuration
-│ ├── package.json
-│ └── .env # Not committed — contains DATABASE_URL
-├── frontend/ # Not started yet
-├── PROGRESS.md # Detailed session-by-session progress log
+│   ├── prisma/
+│   │   ├── schema.prisma       # Database models
+│   │   └── migrations/         # Migration history
+│   ├── src/
+│   │   ├── index.js            # Express server entry point
+│   │   └── routes/             # API route handlers (in progress)
+│   ├── prisma.config.ts        # Prisma 7 configuration
+│   ├── package.json
+│   └── .env                    # Not committed — contains DATABASE_URL
+├── frontend/                   # Not started yet
+├── PROGRESS.md                 # Detailed session-by-session progress log
 └── README.md
+```
 
 ---
 
