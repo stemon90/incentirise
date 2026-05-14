@@ -104,3 +104,6 @@ Steps:
 - stevenuser needs CREATEDB permission for Prisma shadow database during migrations
 - npx prisma init auto-populates .env with Prisma cloud format if previous Prisma projects exist — always verify .env after init
 - After any schema or config change always run: npx prisma generate
+- Prisma v7 import pattern that works:
+  import pkg from '@prisma/client'
+  const { PrismaClient } = pkg
