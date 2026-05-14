@@ -13,12 +13,13 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Database: PostgreSQL 16
 - Environment: Windows 11 + WSL2 Ubuntu 24.04
 - Editor: VS Code with Ubuntu terminal as default shell
-- Version Control: Git + GitHub (GitHub not connected yet)
+- Version Control: Git + GitHub (GitHub connected)
 
 ## Environment Details
 
 - Project path (Windows): C:\Users\Steven\incentirise
 - Project path (Ubuntu): /mnt/c/Users/Steven/incentirise
+- All backend code lives in: /mnt/c/Users/Steven/incentirise/backend
 - PostgreSQL user: stevenuser
 - PostgreSQL database: incentirise
 - PostgreSQL port: 5432
@@ -33,20 +34,9 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Reward (id, title, description, pointCost, createdAt)
 - Transaction (id, userId, rewardId, pointsSpent, createdAt) — links User → Reward
 
-## Roadmap
-
-- Phase 1 — Core App (Local MVP)
-- Phase 2 — Code Discipline + Git Workflow
-- Phase 3 — Dockerization
-- Phase 4 — CI/CD Automation
-- Phase 5 — Cloud Deployment (AWS Core)
-- Phase 6 — Infrastructure as Code (Terraform)
-- Phase 7 — Observability + Reliability
-- Phase 8 — Scaling + Architecture Upgrade
-
 ## Current Position
 
-Phase 1 — Day 3 (not started)
+Phase 1 — Day 4 (not started)
 
 ## Completed
 
@@ -71,17 +61,30 @@ Phase 1 — Day 3 (not started)
 - Verified tables in Prisma Studio
 - Committed 8 files to Git
 
-## Next Session — Day 3
+### Phase 1 — Day 3
 
-Goal: Build the Express server and first API routes
+- Created backend/src/index.js — Express server entry point
+- Installed @prisma/adapter-pg (required by Prisma v7 for direct DB connections)
+- Configured PrismaClient with PrismaPg adapter using DATABASE_URL from .env
+- Added cors and express.json() middleware
+- Added /health route — returns { status: 'ok' }
+- Confirmed server runs on http://localhost:3000
+- Confirmed /health route responds correctly via curl
+- Committed all changes to Git
+
+## Next Session — Day 4 Goal
+
+Build the first real API routes for Users.
 
 Steps:
 
-1. Create src/index.js — Express server entry point
-2. Connect Prisma client to Express
-3. Build GET/POST routes for Users
-4. Test routes manually
-5. Commit progress
+1. Create backend/src/routes/users.js
+2. Build POST /users — create a new user in the database
+3. Build GET /users — return all users
+4. Build GET /users/:id — return one user by ID
+5. Wire the routes into index.js
+6. Test all three routes with curl
+7. Commit progress
 
 ## Key Decisions Made
 
@@ -89,82 +92,15 @@ Steps:
 - WSL2 Ubuntu over Windows shell (Linux environment matches cloud servers)
 - AWS over Azure (larger job market, better cert recognition)
 - Prisma v7 requires connection URL in prisma.config.ts not schema.prisma
+- Prisma v7 requires @prisma/adapter-pg for direct PostgreSQL connections
 - Project files stay on Windows filesystem for now, revisit when Docker starts
 
 ## Known Gotchas
 
 - PostgreSQL must be started manually each session: sudo service postgresql start
 - Prisma v7 does NOT accept url = env("DATABASE_URL") in schema.prisma
+- Prisma v7 does NOT accept datasources option in PrismaClient constructor
+- Prisma v7 requires PrismaPg adapter — import { PrismaPg } from '@prisma/adapter-pg'
 - stevenuser needs CREATEDB permission for Prisma shadow database during migrations
 - npx prisma init auto-populates .env with Prisma cloud format if previous Prisma projects exist — always verify .env after init
-
-## Phase Roadmap (Detailed)
-
-### Phase 1 — Core App (Local MVP)
-
-Days cover: MVP definition, project setup, database, backend API, task logic,
-reward logic, frontend UI, frontend/backend connection, task completion UI,
-reward redemption UI, admin features, cleanup, testing, finalization
-
-### Phase 2 — Code Discipline + Git Workflow
-
-Days cover: Git workflow setup, feature branching, pull request process,
-project structure cleanup, environment management, shared standards,
-refactor pass, testing setup, API tests (users/tasks/rewards),
-regression testing, Git practice repetition, final cleanup
-
-### Phase 3 — Dockerization
-
-Days cover: Docker fundamentals, backend dockerization, frontend dockerization,
-database container, environment variables in containers, Docker networking,
-Docker Compose setup, full stack startup, persistent data testing,
-hot reload, failure testing, new machine test, final cleanup
-
-### Phase 4 — CI/CD Automation
-
-Days cover: CI basics with GitHub Actions, lint and format checks, backend
-tests in CI, frontend build check, test aggregation, branch protection,
-pipeline debugging, Docker build in CI, tagging strategy, Docker Compose
-validation, artifact storage, pipeline optimization, end-to-end CI flow,
-final hardening
-
-### Phase 5 — Cloud Deployment (AWS Core)
-
-Days cover: AWS setup (account, IAM, CLI, billing alerts), networking basics
-(VPC, subnets, security groups), EC2 prep, backend deployment, database
-decision (RDS vs container), frontend hosting (S3), domain and routing,
-environment wiring, security hardening, CI/CD integration, end-to-end testing
-
-### Phase 6 — Infrastructure as Code (Terraform)
-
-Days cover: Terraform setup, core concepts (state, providers, variables),
-networking IaC, compute IaC, database IaC, config outputs, first full apply,
-modular design, environment separation, secrets handling, infrastructure
-updates, drift detection, rebuild test, final documentation
-
-### Phase 7 — Observability + Reliability
-
-Days cover: observability setup, backend logging, frontend logging,
-CloudWatch log destination, log structure standardization, error tracking,
-log validation, metrics setup, CloudWatch metrics dashboard, uptime monitoring,
-latency monitoring, alerting rules, failure simulation, operational runbook
-
-### Phase 8 — Scaling + Architecture Upgrade
-
-Days cover: architecture review, load balancer setup (AWS ALB),
-multi-instance backend, stateless validation, database stress check,
-performance tuning, load testing, service separation, caching layer (Redis),
-cache strategy, database scaling, resilience improvements,
-end-to-end stress test, final architecture lock
-
-## Career Context
-
-- Target role: Cloud/DevOps Engineer or Site Reliability Engineer (SRE)
-- Target salary: $100k+ after tax (~$130-140k gross)
-- Certifications planned:
-  - AWS Cloud Practitioner (during Phase 3-4)
-  - AWS Solutions Architect Associate (during Phase 5-6)
-  - AWS DevOps Engineer Professional or Terraform Associate (optional, Phase 7-8)
-- Job targets when applying: Junior Cloud Engineer, DevOps Engineer I,
-  Infrastructure Engineer, Cloud Support Engineer
-- Remote roles are the primary target — not limited to Albuquerque market
+- After any schema or config change always run: npx prisma generate

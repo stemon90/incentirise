@@ -77,3 +77,4 @@ IncentiRise is a simple rewards system where users complete tasks to earn points
 - Feature scope locked
 - Screens defined
 - Tech stack finalized
+  ls
