@@ -147,6 +147,14 @@ of the time the first set did. That is what repetition does.
 
 ---
 
+### Day 6
+
+Built Reward API routes — POST, GET all, and GET by ID.
+Zero structural errors. The only issue was environmental — starting the server
+from the wrong directory. Fixed in one step.
+The pattern that took hours on Day 4 now takes minutes.
+Installed VS Code. The development environment is fully professional now.
+
 ## Things I want to remember
 
 The people who make it are not the ones who never get stuck.
@@ -170,8 +178,10 @@ I am building.
 
 ## Current status
 
-Phase 1 — Day 6 starting next session.
-Users and Tasks API routes are complete and tested.
+Phase 1 — Day 7 starting next session.
+Users, Tasks, and Rewards API routes are complete and tested.
+Ten routes total. All committed and pushed to GitHub.
 macOS is fully set up as a secondary development machine.
-GitHub is live and up to date.
-The pattern is clear. Keep going.
+VS Code installed and configured.
+Day 7 introduces real logic — multi-step database operations.
+The foundation is done. Now the app starts to actually work..

@@ -46,7 +46,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 1 — Day 5 (not started)
+Phase 1 — Day 7 (not started)
 
 ## Completed
 
@@ -103,18 +103,39 @@ Phase 1 — Day 5 (not started)
 - Tested all three routes successfully with curl
 - Committed all changes to Git
 
-## Next Session — Day 5 Goals
+### Phase 1 — Day 5
 
-Build API routes for Tasks.
+- Created backend/src/routes/tasks.js
+- Built POST /tasks — creates a new task in the database
+- Built GET /tasks — returns all tasks
+- Built GET /tasks/:id — returns one task by ID
+- Wired tasks router into index.js
+- Tested all three routes successfully with curl
+- Committed all changes to Git
+
+### Phase 1 — Day 6
+
+- Created backend/src/routes/rewards.js
+- Built POST /rewards — creates a new reward in the database
+- Built GET /rewards — returns all rewards
+- Built GET /rewards/:id — returns one reward by ID
+- Wired rewards router into index.js
+- Fixed .env not loading — server must be started from inside backend/ folder
+- Tested all three routes successfully with curl
+- Installed VS Code via Homebrew on macOS
+- Restored missing frontend/, controllers/, and middleware/ folders
+- Committed all changes to Git
+
+## Next Session — Day 7 Goals
+
+Build the logic routes that make the app actually work.
 
 Steps:
-1. Create backend/src/routes/tasks.js
-2. Build POST /tasks — create a new task
-3. Build GET /tasks — return all tasks
-4. Build GET /tasks/:id — return one task by ID
-5. Wire the routes into index.js
-6. Test all three routes with curl
-7. Commit progress
+1. Build POST /tasks/:id/complete — user completes a task and earns points
+2. Build POST /rewards/:id/redeem — user spends points on a reward
+3. Both routes involve multiple database operations in one request
+4. Test both routes with curl
+5. Commit progress
 
 ## Key Decisions Made
 
@@ -147,3 +168,4 @@ Steps:
 - After cloning on a new machine always run: npx prisma generate
 - Always create .env manually — it is never committed to Git
 - Never create a second PrismaClient in route files — import the shared instance from index.js
+- Server must be started from inside the backend/ folder or .env will not load

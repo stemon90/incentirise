@@ -1,6 +1,8 @@
 # IncentiRise
 
-A full-stack rewards and accountability platform where users complete tasks to earn points and redeem them for rewards. Built as a progressive learning project to develop real-world Cloud and DevOps skills.
+A full-stack rewards and accountability platform where users complete tasks to earn points
+and redeem them for rewards. Built as a progressive learning project to develop real-world
+Cloud and DevOps skills.
 
 ---
 
@@ -15,32 +17,36 @@ A full-stack rewards and accountability platform where users complete tasks to e
 
 ## Tech Stack
 
-- **Frontend:** React + Vite (in progress)
+- **Frontend:** React + Vite (not started yet)
 - **Backend:** Node.js + Express
 - **Database:** PostgreSQL 16
 - **ORM:** Prisma 7
-- **Environment:** WSL2 Ubuntu 24.04 on Windows 11
+- **Environment:** WSL2 Ubuntu 24.04 on Windows 11 (primary), macOS (secondary)
 
 ---
 
 ## Project Structure
-
-```
 incentirise/
 ├── backend/
 │   ├── prisma/
-│   │   ├── schema.prisma       # Database models
-│   │   └── migrations/         # Migration history
+│   │   ├── schema.prisma         # Database models
+│   │   └── migrations/           # Migration history
 │   ├── src/
-│   │   ├── index.js            # Express server entry point
-│   │   └── routes/             # API route handlers (in progress)
-│   ├── prisma.config.ts        # Prisma 7 configuration
+│   │   ├── index.js              # Express server entry point
+│   │   ├── routes/
+│   │   │   ├── users.js          # User API routes
+│   │   │   ├── tasks.js          # Task API routes
+│   │   │   └── rewards.js        # Reward API routes
+│   │   ├── controllers/          # Empty — coming in Phase 2
+│   │   └── middleware/           # Empty — coming in Phase 2
+│   ├── prisma.config.ts          # Prisma 7 configuration
 │   ├── package.json
-│   └── .env                    # Not committed — contains DATABASE_URL
-├── frontend/                   # Not started yet
-├── PROGRESS.md                 # Detailed session-by-session progress log
+│   └── .env                      # Not committed — contains DATABASE_URL
+├── frontend/                     # Not started yet
+├── JOURNEY.md                    # Personal career journey log
+├── LEARNING.md                   # Concepts and study notes by session
+├── PROGRESS.md                   # Detailed session-by-session progress log
 └── README.md
-```
 
 ---
 
@@ -56,12 +62,18 @@ incentirise/
 
 ## API Routes
 
-| Method | Route      | Description         |
-| ------ | ---------- | ------------------- |
-| GET    | /health    | Server health check |
-| POST   | /users     | Create a user       |
-| GET    | /users     | Get all users       |
-| GET    | /users/:id | Get a user by ID    |
+| Method | Route          | Description            |
+| ------ | -------------- | ---------------------- |
+| GET    | /health        | Server health check    |
+| POST   | /users         | Create a user          |
+| GET    | /users         | Get all users          |
+| GET    | /users/:id     | Get a user by ID       |
+| POST   | /tasks         | Create a task          |
+| GET    | /tasks         | Get all tasks          |
+| GET    | /tasks/:id     | Get a task by ID       |
+| POST   | /rewards       | Create a reward        |
+| GET    | /rewards       | Get all rewards        |
+| GET    | /rewards/:id   | Get a reward by ID     |
 
 More routes coming as the project progresses.
 
@@ -73,23 +85,30 @@ More routes coming as the project progresses.
 
 - Node.js 20+
 - PostgreSQL 16
-- WSL2 Ubuntu (if on Windows)
+- WSL2 Ubuntu (if on Windows) or macOS
 
 ### Setup
 
 ```bash
-# Start PostgreSQL
-sudo service postgresql start
+# Clone the repository
+git clone https://github.com/stemon90/incentirise.git
+cd incentirise
 
 # Install dependencies
 cd backend
 npm install
 
+# Create your .env file
+echo 'DATABASE_URL="postgresql://stevenuser:PASSWORD@localhost:5432/incentirise"' > .env
+
 # Generate Prisma client
 npx prisma generate
 
-# Run the server
-npm run dev
+# Apply migrations
+npx prisma migrate deploy
+
+# Start the server
+node src/index.js
 ```
 
 Server runs on http://localhost:3000
@@ -115,7 +134,8 @@ This project is being built in phases to develop real Cloud and DevOps skills:
 
 ## Career Goal
 
-Transition into a Cloud or DevOps Engineer role at $100k+ after tax. Target certifications: AWS Cloud Practitioner, AWS Solutions Architect Associate, Terraform Associate.
+Transition into a Cloud or DevOps Engineer role at $100k+ after tax.
+Target certifications: AWS Cloud Practitioner, AWS Solutions Architect Associate, Terraform Associate.
 
 ---
 

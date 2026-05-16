@@ -354,6 +354,72 @@ Prisma model names are capitalized in the schema — `Task`, `User`, `Reward`. I
 
 ---
 
+## Phase 1 — Day 6
+
+### Stats
+
+|                        |     |
+| ---------------------- | --- |
+| Routes created         | 3   |
+| Files committed        | 2   |
+| Concepts learned       | 3   |
+| Errors resolved        | 1   |
+
+---
+
+### The pattern is now automatic
+
+**What changed between Day 4 and Day 6**
+On Day 4 the route pattern was new. There were errors, uncertainty about structure, and time spent figuring out how things connected. On Day 6 the reward routes were built cleanly with no structural errors. The only issue was environmental — the server being started from the wrong directory. The pattern itself caused no confusion. That is what mastery of a pattern looks like.
+
+**Why the working directory matters for .env**
+When Node.js starts, it looks for the `.env` file relative to where the server was launched from, not where the file lives on disk. If you start the server from `~/incentirise` instead of `~/incentirise/backend`, Node cannot find the `.env` file inside the backend folder and falls back to system defaults. Always start the server from inside the `backend/` folder:
+
+```bash
+cd ~/incentirise/backend
+node src/index.js
+```
+
+This is a gotcha that will catch you again if you forget it. It is now in the Known Gotchas section of PROGRESS.md.
+
+**VS Code as your primary editor**
+Up until Day 6 files were being edited with nano — a basic terminal text editor. VS Code is a full professional editor with syntax highlighting, error detection, file navigation, and an integrated terminal. Installing it via Homebrew (`brew install --cask visual-studio-code`) and opening projects with `code .` is the standard developer workflow. Nano is still useful for quick edits but VS Code is where real coding happens.
+
+**The routes you have built so far**
+
+| Route           | Method | What it does                  |
+| --------------- | ------ | ----------------------------- |
+| /health         | GET    | Confirm server is running     |
+| /users          | GET    | Return all users              |
+| /users/:id      | GET    | Return one user by ID         |
+| /users          | POST   | Create a new user             |
+| /tasks          | GET    | Return all tasks              |
+| /tasks/:id      | GET    | Return one task by ID         |
+| /tasks          | POST   | Create a new task             |
+| /rewards        | GET    | Return all rewards            |
+| /rewards/:id    | GET    | Return one reward by ID       |
+| /rewards        | POST   | Create a new reward           |
+
+Ten routes. All tested. All committed. The foundation of your API is complete.
+
+---
+
+### Errors resolved
+
+**Error 1 — Database 'stevenmontoya' does not exist**
+Cause: Server was started from the wrong directory. Node could not find the `.env` file so Prisma fell back to the system username as the default database name.
+Fix: Always start the server from inside the `backend/` folder.
+
+---
+
+### Mindset notes
+
+**Patterns compound**
+Day 4 took significant time to build three routes. Day 5 was faster. Day 6 was faster still. The only error today was environmental, not structural. This is what learning looks like when you build instead of watch — each repetition makes the next one easier until the pattern costs you nothing.
+
+**Day 7 is different**
+Every route built so far has been a simple read or write operation. Day 7 introduces logic — routes that perform multiple database operations in sequence, check conditions, and handle failures. This is where the app stops being a collection of endpoints and starts being a real system.
+
 ### Mindset notes
 
 **Zero errors is a good session too**
@@ -410,3 +476,5 @@ Six routes down. More to come. The pattern is yours now.
 | .gitignore              | A file that tells Git which files and folders to never commit                 |
 | node_modules            | The folder containing all installed dependencies — never committed to Git     |
 | .env                    | A file containing secret environment variables — never committed to Git       |
+| Working directory       | The folder your terminal is currently in — affects where Node looks for .env  |
+| code .                  | VS Code command to open the current folder as a project                       |
