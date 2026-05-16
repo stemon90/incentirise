@@ -19,6 +19,9 @@ app.use('/users', usersRouter);
 import tasksRouter from './routes/tasks.js';
 app.use('/tasks', tasksRouter);
 
+import rewardsRouter from './routes/rewards.js';
+app.use('/rewards', rewardsRouter);
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
