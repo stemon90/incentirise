@@ -51,11 +51,7 @@ A migration is a SQL file generated from your schema that records exactly what c
 
 **The workflow never changes**
 Regardless of complexity, the pattern is always:
-
-```
 Change schema → Run migrate → Database updates
-```
-
 ---
 
 ### Your data models
@@ -202,27 +198,158 @@ Prisma 7 was so new that most tutorials were wrong. You hit problems nobody had 
 
 ---
 
+## Phase 1 — Day 4
+
+### Stats
+
+|                        |     |
+| ---------------------- | --- |
+| Environments set up    | 1   |
+| Routes created         | 3   |
+| Files committed        | 4   |
+| Concepts learned       | 11  |
+| Errors resolved        | 2   |
+
+---
+
+### Setting up a development environment from scratch
+
+**What Homebrew is**
+Homebrew is macOS's package manager. A package manager is a tool that installs, updates, and manages software from the command line. Instead of going to a website, downloading an installer, and clicking through a wizard, you run one command and Homebrew handles everything. It is the first thing any developer installs on a fresh Mac.
+
+**What PATH is and why it matters**
+PATH is a list of folders your terminal searches through when you type a command. When you type `psql`, your terminal looks through every folder in PATH until it finds a program called `psql`. If the folder containing `psql` is not in PATH, the terminal says "command not found" — even if the program is installed. When you installed PostgreSQL via Homebrew, it was placed in a non-standard location, so you had to add that location to PATH manually. This is a one-time setup step on any new machine.
+
+**Why we added PostgreSQL to .zprofile**
+`.zprofile` is a file that runs every time you open a new terminal window. By adding the PATH update there, you ensure PostgreSQL is always findable without having to run the command again. Think of it as a startup script for your terminal.
+
+**What `brew services start` does**
+On macOS, Homebrew can manage background services — programs that run continuously in the background without occupying your terminal. `brew services start postgresql@16` starts PostgreSQL as a background service that launches automatically when your Mac starts. This is different from Windows/WSL2 where you have to start PostgreSQL manually every session.
+
+**Cloning a repository**
+`git clone` downloads a complete copy of your project from GitHub to your local machine, including the full Git history. Every commit, every branch, every file — all of it. After cloning, the folder is a fully functional Git repository connected to GitHub. You can pull updates and push changes immediately.
+
+**Why npm install is always required after cloning**
+The `node_modules` folder — which contains all your dependencies — is never committed to Git. It is listed in `.gitignore`. This means every time you clone a project onto a new machine, you must run `npm install` to rebuild it. npm reads `package.json`, finds all the listed dependencies, and downloads them fresh.
+
+**Why npx prisma generate is always required after cloning**
+Prisma generates a custom client tailored to your schema and your operating system. This generated client lives inside `node_modules` and is never committed to Git. After cloning on any new machine, you must run `npx prisma generate` before your server can start. Without it, Prisma cannot find its client and throws a MODULE_NOT_FOUND error.
+
+**Why .env is never in Git**
+The `.env` file contains your database password and other secrets. Committing it to GitHub would expose those credentials publicly. It is listed in `.gitignore` and must be created manually on every new machine. This is standard practice across all professional projects.
+
+**prisma migrate deploy vs prisma migrate dev**
+These two commands do similar things but serve different purposes:
+- `prisma migrate dev` — used during development. Creates new migrations from schema changes. Should only be run on your primary machine.
+- `prisma migrate deploy` — used when setting up a new environment. Applies existing migrations without creating new ones. This is what you run after cloning on a new machine, and what you will run in production on AWS.
+
+---
+
+### API routes and how the system connects
+
+**The three layers of your application**
+Your application has three distinct layers that communicate with each other:
+
+1. **Database (PostgreSQL)** — stores all the data permanently
+2. **Backend (Express + Prisma)** — the engine. Receives requests, talks to the database, sends responses
+3. **Frontend (React — not built yet)** — the interface. What users see and interact with
+
+These layers never skip each other. The frontend never talks directly to the database. Everything goes through the backend.
+
+**What an API is**
+API stands for Application Programming Interface. It is the set of routes your backend exposes for other systems to interact with. When your React frontend needs to create a user, it does not touch the database — it sends a request to your API, which handles the database interaction and sends back the result. This separation is what makes applications secure, maintainable, and scalable.
+
+**The four HTTP methods**
+Every request to your API uses one of four methods that describe the intent:
+
+| Method | Purpose         | Example                    |
+| ------ | --------------- | -------------------------- |
+| GET    | Read data       | GET /users — get all users |
+| POST   | Create data     | POST /users — create user  |
+| PATCH  | Update data     | PATCH /users/1 — edit user |
+| DELETE | Delete data     | DELETE /users/1            |
+
+**How a route works end to end**
+When your React frontend (once built) has a button that says "Add User":
+1. User clicks the button
+2. React sends a POST request to `http://localhost:3000/users` with the user's name and email
+3. Express receives the request and routes it to your `POST /users` handler
+4. Your handler calls `prisma.user.create()` to insert a row in PostgreSQL
+5. PostgreSQL confirms the insert and returns the new record
+6. Prisma passes it back to your handler
+7. Your handler sends it back to React as JSON
+8. React displays the new user on screen
+
+Every interaction in your app will follow this exact pattern.
+
+**Why routes are in separate files**
+You could write all your routes directly in `index.js`. For three routes that would be fine. For a real application with dozens of routes across users, tasks, rewards, and transactions, one file becomes unmanageable. Separating routes into their own files keeps the code organized and makes it easy to find, edit, and debug specific functionality.
+
+**The shared Prisma instance**
+You only ever create one PrismaClient instance per application. Creating multiple instances causes connection pool errors and wastes resources. The pattern used in this project is to create the instance in `index.js`, export it, and import it in every route file that needs it. This is the correct production pattern.
+
+---
+
+### Errors resolved
+
+**Error 1 — MODULE_NOT_FOUND for Prisma client**
+Cause: Prisma generates a machine-specific client that is not committed to Git. After cloning, the client did not exist yet.
+Fix: `npx prisma generate`
+
+**Error 2 — PrismaClient needs valid options**
+Cause: `users.js` was creating its own PrismaClient without the required PrismaPg adapter.
+Fix: Removed the local PrismaClient instance and imported the shared `prisma` from `index.js` instead.
+
+---
+
+### Mindset notes
+
+**Setting up environments is a core skill**
+Today you set up a complete development environment on a machine that had nothing on it. You installed a package manager, a runtime, a database, configured PATH, cloned a repo, and had a running server in under an hour. This is exactly what DevOps engineers do — except at scale, automated, on cloud servers. Everything you did manually today will eventually be scripted.
+
+**Every machine is a fresh start**
+Code lives in Git. Everything else — dependencies, environment variables, generated files, database data — must be recreated on each machine. Understanding what needs to be recreated and why is what separates developers who can work anywhere from developers who are stuck when their usual machine isn't available.
+
+**The outcome and the how are both important**
+Building a working app is the goal. Understanding why it works is what makes you employable. The study sheets after each session bridge that gap — you build fast during sessions and learn the reasoning afterward. Both matter.
+
+---
+
 ## Vocabulary reference
 
-| Term              | Definition                                                                 |
-| ----------------- | -------------------------------------------------------------------------- |
-| WSL2              | Windows Subsystem for Linux — runs Ubuntu inside Windows                   |
-| Terminal          | Text interface for running commands                                        |
-| Process           | A running program that occupies the terminal until stopped                 |
-| PostgreSQL        | A production-grade relational database                                     |
-| Connection string | A URL that tells an app how to connect to a database                       |
-| ORM               | Object Relational Mapper — translates between code and database            |
-| Schema            | The blueprint that defines what your data looks like                       |
-| Migration         | A recorded change to the database structure                                |
-| Express           | A Node.js framework for building web servers                               |
-| Route             | A URL pattern that triggers specific server code                           |
-| Middleware        | Code that runs on every request before hitting a route                     |
-| cors              | Allows cross-origin requests between frontend and backend                  |
-| req.body          | The data sent in an incoming request                                       |
-| Adapter           | A plugin that connects two systems that don't natively speak to each other |
-| curl              | Command line tool for making HTTP requests                                 |
-| git add           | Stages files for the next commit                                           |
-| git commit        | Saves a snapshot of staged files                                           |
-| git push          | Sends commits to GitHub                                                    |
-| npm run dev       | Starts the development server                                              |
-| Ctrl+C            | Kills a running process                                                    |
+| Term                    | Definition                                                                    |
+| ----------------------- | ----------------------------------------------------------------------------- |
+| WSL2                    | Windows Subsystem for Linux — runs Ubuntu inside Windows                      |
+| Terminal                | Text interface for running commands                                           |
+| Process                 | A running program that occupies the terminal until stopped                    |
+| PostgreSQL              | A production-grade relational database                                        |
+| Connection string       | A URL that tells an app how to connect to a database                          |
+| ORM                     | Object Relational Mapper — translates between code and database               |
+| Schema                  | The blueprint that defines what your data looks like                          |
+| Migration               | A recorded change to the database structure                                   |
+| Express                 | A Node.js framework for building web servers                                  |
+| Route                   | A URL pattern that triggers specific server code                              |
+| Middleware              | Code that runs on every request before hitting a route                        |
+| cors                    | Allows cross-origin requests between frontend and backend                     |
+| req.body                | The data sent in an incoming request                                          |
+| Adapter                 | A plugin that connects two systems that don't natively speak to each other    |
+| curl                    | Command line tool for making HTTP requests                                    |
+| git add                 | Stages files for the next commit                                              |
+| git commit              | Saves a snapshot of staged files                                              |
+| git push                | Sends commits to GitHub                                                       |
+| git clone               | Downloads a full copy of a repository from GitHub to your machine             |
+| npm install             | Downloads and installs all project dependencies listed in package.json        |
+| npm run dev             | Starts the development server                                                 |
+| Ctrl+C                  | Kills a running process                                                       |
+| Homebrew                | macOS package manager — installs software from the command line               |
+| PATH                    | A list of folders your terminal searches when you type a command              |
+| .zprofile               | A file that runs every time a new terminal window opens on macOS              |
+| brew services           | Homebrew tool for managing background services like PostgreSQL                |
+| API                     | The set of routes your backend exposes for other systems to interact with     |
+| HTTP method             | The type of request — GET, POST, PATCH, or DELETE                            |
+| prisma migrate deploy   | Applies existing migrations on a new machine without creating new ones        |
+| npx prisma generate     | Generates the Prisma client for the current machine and OS                    |
+| Shared Prisma instance  | One PrismaClient created in index.js and imported everywhere it is needed     |
+| .gitignore              | A file that tells Git which files and folders to never commit                 |
+| node_modules            | The folder containing all installed dependencies — never committed to Git     |
+| .env                    | A file containing secret environment variables — never committed to Git       |

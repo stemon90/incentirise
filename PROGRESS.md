@@ -11,12 +11,13 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Backend: Node.js + Express
 - ORM: Prisma v7
 - Database: PostgreSQL 16
-- Environment: Windows 11 + WSL2 Ubuntu 24.04
+- Environment: Windows 11 + WSL2 Ubuntu 24.04 (primary), macOS (secondary)
 - Editor: VS Code with Ubuntu terminal as default shell
 - Version Control: Git + GitHub (GitHub connected)
 
 ## Environment Details
 
+### Windows (Primary)
 - Project path (Windows): C:\Users\Steven\incentirise
 - Project path (Ubuntu): /mnt/c/Users/Steven/incentirise
 - All backend code lives in: /mnt/c/Users/Steven/incentirise/backend
@@ -24,6 +25,15 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - PostgreSQL database: incentirise
 - PostgreSQL port: 5432
 - Prisma config: uses prisma.config.ts for connection URL (Prisma v7 requirement)
+- Connection string format: postgresql://stevenuser:PASSWORD@localhost:5432/incentirise
+
+### macOS (Secondary)
+- Project path: /Users/stevenmontoya/incentirise
+- PostgreSQL user: stevenuser
+- PostgreSQL database: incentirise
+- PostgreSQL port: 5432
+- PostgreSQL started automatically via Homebrew services
+- Node.js installed via Homebrew
 - Connection string format: postgresql://stevenuser:PASSWORD@localhost:5432/incentirise
 
 ## Database Models
@@ -36,7 +46,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 1 — Day 4 (not started)
+Phase 1 — Day 5 (not started)
 
 ## Completed
 
@@ -72,16 +82,36 @@ Phase 1 — Day 4 (not started)
 - Confirmed /health route responds correctly via curl
 - Committed all changes to Git
 
-## Next Session — Day 4 Goal
+### Phase 1 — Day 4
 
-Build the first real API routes for Users.
+- Set up full development environment on macOS from scratch
+- Installed Homebrew, Node.js, npm, PostgreSQL 16
+- Added PostgreSQL to system PATH
+- Cloned repository from GitHub
+- Installed dependencies with npm install
+- Created .env file with database connection string
+- Ran prisma migrate deploy — applied existing migration, all 5 tables created
+- Ran npx prisma generate — generated Prisma client for macOS
+- Confirmed server running on http://localhost:3000
+- Confirmed /health route responding correctly
+- Created backend/src/routes/users.js
+- Built POST /users — creates a new user in the database
+- Built GET /users — returns all users
+- Built GET /users/:id — returns one user by ID
+- Wired users router into index.js
+- Fixed Prisma instance error — routes import shared prisma from index.js
+- Tested all three routes successfully with curl
+- Committed all changes to Git
+
+## Next Session — Day 5 Goals
+
+Build API routes for Tasks.
 
 Steps:
-
-1. Create backend/src/routes/users.js
-2. Build POST /users — create a new user in the database
-3. Build GET /users — return all users
-4. Build GET /users/:id — return one user by ID
+1. Create backend/src/routes/tasks.js
+2. Build POST /tasks — create a new task
+3. Build GET /tasks — return all tasks
+4. Build GET /tasks/:id — return one task by ID
 5. Wire the routes into index.js
 6. Test all three routes with curl
 7. Commit progress
@@ -94,9 +124,11 @@ Steps:
 - Prisma v7 requires connection URL in prisma.config.ts not schema.prisma
 - Prisma v7 requires @prisma/adapter-pg for direct PostgreSQL connections
 - Project files stay on Windows filesystem for now, revisit when Docker starts
+- Shared Prisma instance exported from index.js and imported by all route files
 
 ## Known Gotchas
 
+### Windows
 - PostgreSQL must be started manually each session: sudo service postgresql start
 - Prisma v7 does NOT accept url = env("DATABASE_URL") in schema.prisma
 - Prisma v7 does NOT accept datasources option in PrismaClient constructor
@@ -107,3 +139,11 @@ Steps:
 - Prisma v7 import pattern that works:
   import pkg from '@prisma/client'
   const { PrismaClient } = pkg
+
+### macOS
+- PostgreSQL starts automatically via Homebrew: brew services start postgresql@16
+- PostgreSQL must be added to PATH manually after install
+- After cloning on a new machine always run: npm install
+- After cloning on a new machine always run: npx prisma generate
+- Always create .env manually — it is never committed to Git
+- Never create a second PrismaClient in route files — import the shared instance from index.js
