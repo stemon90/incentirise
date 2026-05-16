@@ -16,6 +16,9 @@ app.use(express.json());
 import usersRouter from './routes/users.js';
 app.use('/users', usersRouter);
 
+import tasksRouter from './routes/tasks.js';
+app.use('/tasks', tasksRouter);
+
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
