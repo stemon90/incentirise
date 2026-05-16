@@ -130,6 +130,21 @@ Solved every one by reading error messages and trying fixes.
 Server is running. Health check responds. Committed and pushed to GitHub.
 Learned that debugging is not a sign of failure — it is the job.
 
+### Day 4
+
+Set up a complete development environment on a MacBook from scratch.
+Installed Homebrew, Node.js, PostgreSQL. Configured PATH. Cloned the repo.
+Built the first real API routes — POST, GET all, and GET by ID for Users.
+Learned that every machine is a fresh start and knowing how to set one up
+is a core skill, not a one time task.
+
+### Day 5
+
+Built Task API routes following the same pattern as Users.
+POST, GET all, and GET by ID — all tested and working.
+The pattern is becoming familiar. The second set of routes took a fraction
+of the time the first set did. That is what repetition does.
+
 ---
 
 ## Things I want to remember
@@ -145,12 +160,18 @@ It cares that I can do it.
 Tutorials teach you what to type.
 Building teaches you how to think.
 
+Speed comes from repetition, not shortcuts.
+The more routes I build, the faster I build them.
+By the time I am deploying to AWS, this will all feel obvious.
+
 I am building.
 
 ---
 
 ## Current status
 
-Phase 1 — Day 4 starting next session.
-Server is running. Database is connected. GitHub is live.
-The foundation is solid. Keep going.
+Phase 1 — Day 6 starting next session.
+Users and Tasks API routes are complete and tested.
+macOS is fully set up as a secondary development machine.
+GitHub is live and up to date.
+The pattern is clear. Keep going.

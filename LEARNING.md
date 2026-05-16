@@ -315,6 +315,63 @@ Building a working app is the goal. Understanding why it works is what makes you
 
 ---
 
+## Phase 1 — Day 5
+
+### Stats
+
+|                        |     |
+| ---------------------- | --- |
+| Routes created         | 3   |
+| Files committed        | 2   |
+| Concepts learned       | 4   |
+| Errors resolved        | 0   |
+
+---
+
+### The pattern becomes familiar
+
+**Repetition is how developers build speed**
+The Task routes built today followed the exact same structure as the User routes from Day 4. The second time through, there were no errors, no confusion about where files go, and no uncertainty about how to wire things into index.js. This is how real skill develops — not by learning something new every session, but by repeating patterns until they become automatic. By the time you build Reward and Transaction routes, this will feel effortless.
+
+**What a router file always contains**
+Every route file in this project follows the same four-part structure:
+1. Import express and create a router — `const router = express.Router()`
+2. Import the shared prisma instance from index.js
+3. Define the route handlers — GET, POST, PATCH, DELETE
+4. Export the router — `export default router`
+
+This structure will never change regardless of which resource you are routing.
+
+**What index.js always does with routes**
+Every new route file gets wired into index.js with two lines:
+1. Import the router — `import tasksRouter from './routes/tasks.js'`
+2. Register it with a path — `app.use('/tasks', tasksRouter)`
+
+The path you register determines the URL prefix. Registering at `/tasks` means all routes inside tasks.js respond to URLs that start with `/tasks`.
+
+**How Prisma model names map to routes**
+Prisma model names are capitalized in the schema — `Task`, `User`, `Reward`. In your route handlers, Prisma uses the lowercase camel case version — `prisma.task`, `prisma.user`, `prisma.reward`. The model name in the schema and the property name on the prisma client always correspond directly.
+
+---
+
+### Mindset notes
+
+**Zero errors is a good session too**
+Not every session involves debugging. Some sessions are about building cleanly and quickly using patterns you already understand. Day 5 had no errors. That is not luck — it is the result of solving the same problems on Day 4 and knowing exactly what to do the second time.
+
+**The routes you have built so far**
+
+| Route           | Method | What it does              |
+| --------------- | ------ | ------------------------- |
+| /users          | GET    | Return all users          |
+| /users/:id      | GET    | Return one user by ID     |
+| /users          | POST   | Create a new user         |
+| /tasks          | GET    | Return all tasks          |
+| /tasks/:id      | GET    | Return one task by ID     |
+| /tasks          | POST   | Create a new task         |
+
+Six routes down. More to come. The pattern is yours now.
+
 ## Vocabulary reference
 
 | Term                    | Definition                                                                    |
