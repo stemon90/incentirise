@@ -18,6 +18,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 ## Environment Details
 
 ### Windows (Primary)
+
 - Project path (Windows): C:\Users\Steven\incentirise
 - Project path (Ubuntu): /mnt/c/Users/Steven/incentirise
 - All backend code lives in: /mnt/c/Users/Steven/incentirise/backend
@@ -28,6 +29,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Connection string format: postgresql://stevenuser:PASSWORD@localhost:5432/incentirise
 
 ### macOS (Secondary)
+
 - Project path: /Users/stevenmontoya/incentirise
 - PostgreSQL user: stevenuser
 - PostgreSQL database: incentirise
@@ -46,7 +48,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 1 — Day 7 (not started)
+Phase 1 — Day 8 (not started)
 
 ## Completed
 
@@ -126,16 +128,26 @@ Phase 1 — Day 7 (not started)
 - Restored missing frontend/, controllers/, and middleware/ folders
 - Committed all changes to Git
 
-## Next Session — Day 7 Goals
+### Phase 1 — Day 7
 
-Build the logic routes that make the app actually work.
+- Created backend/src/routes/logic.js
+- Built POST /complete-task — user completes a task, points added to balance, TaskCompletion record created
+- Built POST /redeem-reward — user spends points on a reward, balance deducted, Transaction record created
+- Fixed task.pointValue mismatch — schema uses points, updated logic.js accordingly
+- Tested complete-task with curl — user earned 50 points
+- Tested redeem-reward with curl — user spent 30 points, balance dropped to 20
+- Full rewards loop working end to end
+- Committed and pushed to GitHub
 
-Steps:
-1. Build POST /tasks/:id/complete — user completes a task and earns points
-2. Build POST /rewards/:id/redeem — user spends points on a reward
-3. Both routes involve multiple database operations in one request
-4. Test both routes with curl
-5. Commit progress
+## Next Session — Day 8 Goals
+
+Complete Phase 1 by making the app production-ready at the local level.
+
+1. Add input validation to all routes — reject bad or missing data before it hits the database
+2. Standardize error responses across all routes so every failure looks consistent
+3. Test all routes with bad data to confirm validation is working
+4. Commit and push all changes
+5. Close out Phase 1 and prep for Phase 2 — Git Workflow and Code Discipline
 
 ## Key Decisions Made
 
@@ -150,6 +162,7 @@ Steps:
 ## Known Gotchas
 
 ### Windows
+
 - PostgreSQL must be started manually each session: sudo service postgresql start
 - Prisma v7 does NOT accept url = env("DATABASE_URL") in schema.prisma
 - Prisma v7 does NOT accept datasources option in PrismaClient constructor
@@ -162,6 +175,7 @@ Steps:
   const { PrismaClient } = pkg
 
 ### macOS
+
 - PostgreSQL starts automatically via Homebrew: brew services start postgresql@16
 - PostgreSQL must be added to PATH manually after install
 - After cloning on a new machine always run: npm install
