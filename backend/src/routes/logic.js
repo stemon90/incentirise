@@ -1,72 +1,93 @@
 import express from "express";
 import { prisma } from "../index.js";
+import {
+  validate,
+  completeTaskSchema,
+  redeemRewardSchema,
+} from "../middleware/validate.js";
 
 const router = express.Router();
 
-// POST /complete-task — user completes a task and earns points
-router.post("/complete-task", async (req, res) => {
-  const { userId, taskId } = req.body;
+// POST /complete-task
+router.post(
+  "/complete-task",
+  validate(completeTaskSchema),
+  async (req, res) => {
+    try {
+      const { userId, taskId } = req.body;
 
-  try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    const task = await prisma.task.findUnique({ where: { id: taskId } });
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    if (!user || !task) {
-      return res.status(404).json({ error: "User or task not found" });
+      const task = await prisma.task.findUnique({ where: { id: taskId } });
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      const completion = await prisma.taskCompletion.create({
+        data: { userId, taskId },
+      });
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { points: user.points + task.points },
+      });
+
+      res.status(201).json({
+        message: "Task completed",
+        pointsEarned: task.points,
+        newBalance: updatedUser.points,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Something went wrong" });
     }
+  },
+);
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { points: user.points + task.points },
-    });
+// POST /redeem-reward
+router.post(
+  "/redeem-reward",
+  validate(redeemRewardSchema),
+  async (req, res) => {
+    try {
+      const { userId, rewardId } = req.body;
 
-    const completion = await prisma.taskCompletion.create({
-      data: { userId, taskId },
-    });
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    res.json({
-      message: "Task completed!",
-      points: updatedUser.points,
-      completion,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+      const reward = await prisma.reward.findUnique({
+        where: { id: rewardId },
+      });
+      if (!reward) {
+        return res.status(404).json({ error: "Reward not found" });
+      }
 
-// POST /redeem-reward — user spends points on a reward
-router.post("/redeem-reward", async (req, res) => {
-  const { userId, rewardId } = req.body;
+      if (user.points < reward.pointCost) {
+        return res.status(400).json({ error: "Insufficient points" });
+      }
 
-  try {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    const reward = await prisma.reward.findUnique({ where: { id: rewardId } });
+      const transaction = await prisma.transaction.create({
+        data: { userId, rewardId, pointsSpent: reward.pointCost },
+      });
 
-    if (!user || !reward) {
-      return res.status(404).json({ error: "User or reward not found" });
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { points: user.points - reward.pointCost },
+      });
+
+      res.status(201).json({
+        message: "Reward redeemed",
+        pointsSpent: reward.pointCost,
+        newBalance: updatedUser.points,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Something went wrong" });
     }
-
-    if (user.points < reward.pointCost) {
-      return res.status(400).json({ error: "Not enough points" });
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { points: user.points - reward.pointCost },
-    });
-
-    const transaction = await prisma.transaction.create({
-      data: { userId, rewardId, pointsSpent: reward.pointCost },
-    });
-
-    res.json({
-      message: "Reward redeemed!",
-      points: updatedUser.points,
-      transaction,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+  },
+);
 
 export default router;
