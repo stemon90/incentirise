@@ -13,14 +13,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-import usersRouter from './routes/users.js';
-app.use('/users', usersRouter);
+import usersRouter from "./routes/users.js";
+app.use("/users", usersRouter);
 
-import tasksRouter from './routes/tasks.js';
-app.use('/tasks', tasksRouter);
+import tasksRouter from "./routes/tasks.js";
+app.use("/tasks", tasksRouter);
 
-import rewardsRouter from './routes/rewards.js';
-app.use('/rewards', rewardsRouter);
+import rewardsRouter from "./routes/rewards.js";
+app.use("/rewards", rewardsRouter);
+
+import logicRouter from "./routes/logic.js";
+app.use("/", logicRouter);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
