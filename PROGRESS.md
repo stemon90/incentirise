@@ -48,7 +48,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 1 — Day 8 (not started)
+Phase 2 — Day 9 (in progress)
 
 ## Completed
 
@@ -139,15 +139,41 @@ Phase 1 — Day 8 (not started)
 - Full rewards loop working end to end
 - Committed and pushed to GitHub
 
-## Next Session — Day 8 Goals
+### Phase 1 — Day 8
 
-Complete Phase 1 by making the app production-ready at the local level.
+- Installed Zod for schema-based input validation
+- Created backend/src/middleware/validate.js
+- Built reusable validate() middleware factory using Zod's safeParse
+- Wrote Zod schemas for all five operations: createUser, createTask, createReward, completeTask, redeemReward
+- Updated users.js, tasks.js, rewards.js, logic.js to use validate() middleware
+- Added standardized error response shape { "error": "message" } across all routes
+- Added Prisma P2002 error handling for duplicate email on POST /users
+- Added 404 handling for all not-found cases across all routes
+- Added invalid ID handling for all /:id routes
+- Added insufficient points check to POST /redeem-reward
+- Tested all routes with bad data — 18 tests, all passed
+- Committed and pushed to GitHub
+- Phase 1 complete
 
-1. Add input validation to all routes — reject bad or missing data before it hits the database
-2. Standardize error responses across all routes so every failure looks consistent
-3. Test all routes with bad data to confirm validation is working
-4. Commit and push all changes
-5. Close out Phase 1 and prep for Phase 2 — Git Workflow and Code Discipline
+### Phase 2 — Day 9
+
+- Created feature branch: phase-2/git-workflow
+- Set up branch protection on GitHub — main now requires a pull request to merge
+- Learned conventional commits standard — all commits from Day 9 forward follow this format
+- Reviewed Phase 1 commit history and rewrote each in conventional format as an exercise
+- Committed and pushed via pull request — first time not pushing directly to main
+
+## Next Session — Day 9 Goals
+
+Begin Phase 2 — Git Workflow and Code Discipline.
+
+1. Learn and practice the feature branch workflow — no more committing directly to main
+2. Create a new branch for each piece of work going forward
+3. Write a proper .gitignore audit — confirm nothing sensitive is ever committed
+4. Learn how to write meaningful commit messages using the conventional commits standard
+5. Retrospective — review all Phase 1 commits and identify what would have been done differently
+6. Set up branch protection on GitHub — main branch requires a pull request to merge
+7. Commit and push following the new workflow
 
 ## Key Decisions Made
 

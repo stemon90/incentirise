@@ -356,6 +356,64 @@ The logic routes work when given correct data. They do not yet handle missing fi
 
 ---
 
+## Phase 1 — Day 8
+
+### Stats
+
+|                  |     |
+| ---------------- | --- |
+| Files modified   | 5   |
+| Tests run        | 18  |
+| Concepts learned | 6   |
+| Errors resolved  | 1   |
+
+### Input validation
+
+**Why validation belongs before the database**
+Without validation, bad data either crashes Prisma with a cryptic error or writes garbage into the database. Validation intercepts the request early — before any database call is made — and rejects it immediately with a clear message.
+
+**Zod — schema-based validation**
+Zod lets you define the shape of valid data as a schema, then check any incoming request against it. If the data matches, it passes through. If it doesn't, Zod returns a detailed list of what failed. It is the current industry standard for validation in Node.js projects.
+
+**Why Zod pairs naturally with Prisma**
+Both Zod and Prisma are schema-driven. You define what your data looks like once in Prisma for the database, and once in Zod for incoming requests. The mental model is identical — learn one, the other feels familiar.
+
+**The middleware factory pattern**
+Instead of writing validation logic inside every route, you write it once as a reusable middleware factory:
+
+```js
+export function validate(schema) {
+  return (req, res, next) => {
+    const result = schema.safeParse(req.body);
+    if (!result.success) {
+      const errors = result.error.issues.map((e) => e.message);
+      return res.status(400).json({ error: errors[0] });
+    }
+    req.body = result.data;
+    next();
+  };
+}
+```
+
+`validate(schema)` returns a middleware function. That function runs before your route handler. If validation fails, the request stops there. If it passes, `next()` hands control to the route.
+
+**safeParse vs parse**
+Zod has two ways to validate. `parse()` throws an exception on failure. `safeParse()` returns a result object with a `success` flag — no exception, no try/catch needed. Always use `safeParse()` in middleware.
+
+### Standardized error responses
+
+**Why consistency matters**
+Every failure across every route now returns the same shape: `{ "error": "message" }`. When your frontend is built it can handle errors with one pattern instead of guessing what shape each route returns. This is a contract between your backend and anything that talks to it.
+
+**Prisma error codes**
+Prisma throws structured errors with a `code` field for known database failures. `P2002` means a unique constraint was violated — in your case, a duplicate email. Catching it by code lets you return a meaningful message instead of a 500.
+
+### Errors resolved
+
+**Error 1 — Cannot read properties of undefined (reading 'map')**
+Cause: Zod uses `result.error.issues` not `result.error.errors`.
+Fix: Updated validate.js to use `result.error.issues.map()`.
+
 ## All Routes — Current State
 
 | Route          | Method | What it does                                         |
@@ -375,43 +433,128 @@ The logic routes work when given correct data. They do not yet handle missing fi
 
 ---
 
+## Phase 2 — Day 9
+
+### Stats
+
+|                  |     |
+| ---------------- | --- |
+| Branches created | 1   |
+| Rules created    | 1   |
+| Concepts learned | 5   |
+| Errors resolved  | 0   |
+
+### Branch workflow
+
+**Why main stays clean**
+Main is the source of truth. It should always contain working, stable code. The moment you commit broken or incomplete work directly to main, the entire project is in a bad state. Feature branches solve this — all work happens in isolation until it is ready.
+
+**The feature branch workflow**
+
+1. Create a branch from main — it starts as an exact copy
+2. Do all your work on that branch
+3. Push the branch to GitHub
+4. Open a pull request
+5. Review and merge into main
+6. Delete the branch
+
+Every piece of work — no matter how small — gets its own branch from Day 9 forward.
+
+**Branch naming**
+Branch names should be descriptive and scoped. The pattern used in this project:
+
+phase-2/git-workflow
+phase-2/controller-refactor
+phase-3/dockerization
+
+The prefix scopes the branch to a phase. The suffix describes what it contains.
+
+**What a pull request is**
+A pull request is a formal proposal to merge one branch into another. On GitHub it shows exactly what changed, line by line. In a team environment someone reviews it before approving. Solo, it still enforces the habit and gives you a clean merge record on main.
+
+### Branch protection
+
+**Why you lock main**
+Without branch protection, anyone — including you — can push directly to main and bypass the pull request process entirely. Branch protection enforces the workflow at the repository level, not just as a personal habit.
+
+**What the ruleset does**
+The `protect-main` ruleset does two things. It requires all changes to come through a pull request. It blocks force pushes — preventing anyone from overwriting commit history on main.
+
+### Conventional commits
+
+**The format**
+
+type(scope): short description
+
+**Why it matters**
+Commit messages are documentation. A clean history tells the story of how the project was built — what was added, what was fixed, and why. In Phase 4 some CI/CD tools parse commit messages to automate changelogs and version bumping. The habit starts now so it is automatic by the time it matters.
+
+**The types you will use most**
+
+| Type     | When to use it                               |
+| -------- | -------------------------------------------- |
+| feat     | Adding new functionality                     |
+| fix      | Fixing a bug                                 |
+| chore    | Maintenance, config, dependencies            |
+| docs     | Documentation changes                        |
+| refactor | Restructuring code without changing behavior |
+| test     | Adding or updating tests                     |
+
+### Mindset notes
+
+**Habits don't switch on overnight**
+Sloppy commit habits now become sloppy commits on your first job when people are reviewing your work. The workflow needs to be automatic before the stakes are real.
+
+**Phase 2 is infrastructure for everything that follows**
+CI/CD pipelines in Phase 4 hook into branch activity. Deployments in Phase 5 trigger from merges to main. The discipline built in Phase 2 is what makes all of that possible.
+
 ## Vocabulary Reference
 
-| Term                   | Definition                                                                   |
-| ---------------------- | ---------------------------------------------------------------------------- |
-| WSL2                   | Windows Subsystem for Linux — runs Ubuntu inside Windows                     |
-| Terminal               | Text interface for running commands                                          |
-| Process                | A running program that occupies the terminal until stopped                   |
-| PostgreSQL             | A production-grade relational database                                       |
-| Connection string      | A URL that tells an app how to connect to a database                         |
-| ORM                    | Object Relational Mapper — translates between code and database              |
-| Schema                 | The blueprint that defines what your data looks like                         |
-| Migration              | A recorded change to the database structure                                  |
-| Express                | A Node.js framework for building web servers                                 |
-| Route                  | A URL pattern that triggers specific server code                             |
-| Middleware             | Code that runs on every request before hitting a route                       |
-| cors                   | Allows cross-origin requests between frontend and backend                    |
-| req.body               | The data sent in an incoming request                                         |
-| Adapter                | A plugin that connects two systems that don't natively speak to each other   |
-| curl                   | Command line tool for making HTTP requests                                   |
-| HTTP status code       | A number that tells the client what happened — 200, 400, 404, 500            |
-| Business logic         | Code that enforces rules — like checking points before allowing a redemption |
-| git add                | Stages files for the next commit                                             |
-| git commit             | Saves a snapshot of staged files                                             |
-| git push               | Sends commits to GitHub                                                      |
-| git clone              | Downloads a full copy of a repository from GitHub                            |
-| npm install            | Downloads all project dependencies listed in package.json                    |
-| Homebrew               | macOS package manager                                                        |
-| PATH                   | A list of folders your terminal searches when you type a command             |
-| .zprofile              | A file that runs every time a new terminal window opens on macOS             |
-| brew services          | Homebrew tool for managing background services like PostgreSQL               |
-| API                    | The set of routes your backend exposes for other systems to interact with    |
-| HTTP method            | The type of request — GET, POST, PATCH, or DELETE                            |
-| prisma migrate deploy  | Applies existing migrations on a new machine without creating new ones       |
-| npx prisma generate    | Generates the Prisma client for the current machine and OS                   |
-| Shared Prisma instance | One PrismaClient created in index.js and imported everywhere it is needed    |
-| .gitignore             | A file that tells Git which files and folders to never commit                |
-| node_modules           | The folder containing all installed dependencies — never committed to Git    |
-| .env                   | A file containing secret environment variables — never committed to Git      |
-| Working directory      | The folder your terminal is currently in                                     |
-| code .                 | VS Code command to open the current folder as a project                      |
+| Term                   | Definition                                                                             |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| WSL2                   | Windows Subsystem for Linux — runs Ubuntu inside Windows                               |
+| Terminal               | Text interface for running commands                                                    |
+| Process                | A running program that occupies the terminal until stopped                             |
+| PostgreSQL             | A production-grade relational database                                                 |
+| Connection string      | A URL that tells an app how to connect to a database                                   |
+| ORM                    | Object Relational Mapper — translates between code and database                        |
+| Schema                 | The blueprint that defines what your data looks like                                   |
+| Migration              | A recorded change to the database structure                                            |
+| Express                | A Node.js framework for building web servers                                           |
+| Route                  | A URL pattern that triggers specific server code                                       |
+| Middleware             | Code that runs on every request before hitting a route                                 |
+| cors                   | Allows cross-origin requests between frontend and backend                              |
+| req.body               | The data sent in an incoming request                                                   |
+| Adapter                | A plugin that connects two systems that don't natively speak to each other             |
+| curl                   | Command line tool for making HTTP requests                                             |
+| HTTP status code       | A number that tells the client what happened — 200, 400, 404, 500                      |
+| Business logic         | Code that enforces rules — like checking points before allowing a redemption           |
+| git add                | Stages files for the next commit                                                       |
+| git commit             | Saves a snapshot of staged files                                                       |
+| git push               | Sends commits to GitHub                                                                |
+| git clone              | Downloads a full copy of a repository from GitHub                                      |
+| npm install            | Downloads all project dependencies listed in package.json                              |
+| Homebrew               | macOS package manager                                                                  |
+| PATH                   | A list of folders your terminal searches when you type a command                       |
+| .zprofile              | A file that runs every time a new terminal window opens on macOS                       |
+| brew services          | Homebrew tool for managing background services like PostgreSQL                         |
+| API                    | The set of routes your backend exposes for other systems to interact with              |
+| HTTP method            | The type of request — GET, POST, PATCH, or DELETE                                      |
+| prisma migrate deploy  | Applies existing migrations on a new machine without creating new ones                 |
+| npx prisma generate    | Generates the Prisma client for the current machine and OS                             |
+| Shared Prisma instance | One PrismaClient created in index.js and imported everywhere it is needed              |
+| .gitignore             | A file that tells Git which files and folders to never commit                          |
+| node_modules           | The folder containing all installed dependencies — never committed to Git              |
+| .env                   | A file containing secret environment variables — never committed to Git                |
+| Working directory      | The folder your terminal is currently in                                               |
+| code .                 | VS Code command to open the current folder as a project                                |
+| Zod                    | A schema-based validation library for JavaScript and TypeScript                        |
+| safeParse              | Zod method that validates data and returns a result object instead of throwing         |
+| Middleware factory     | A function that returns a middleware function, allowing it to be configured before use |
+| P2002                  | Prisma error code for a unique constraint violation                                    |
+| Input validation       | Checking that incoming data is correct before processing or storing it                 |
+| Branch                 | A parallel copy of the codebase where work happens in isolation                        |
+| Pull request           | A formal proposal to merge one branch into another                                     |
+| Branch protection      | A GitHub rule that prevents direct pushes to a protected branch                        |
+| Conventional commit    | A commit message format: type(scope): description                                      |
+| Force push             | Overwriting remote commit history — blocked on main by branch protection               |
