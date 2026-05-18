@@ -27,7 +27,7 @@ I am betting on that. This project is the proof of work.
 
 ---
 
-## The project
+## The Project
 
 **IncentiRise** — a full stack rewards and accountability platform.
 
@@ -71,7 +71,7 @@ infrastructure as code, monitoring, and scaling.
 
 ---
 
-## Roles to target when applying
+## Target Roles
 
 Start applying around Phase 5 when the story is strong enough.
 
@@ -95,7 +95,7 @@ Start applying around Phase 5 when the story is strong enough.
 
 ---
 
-## The roadmap
+## Roadmap
 
 | Phase | Focus                                 | Status      |
 | ----- | ------------------------------------- | ----------- |
@@ -110,7 +110,7 @@ Start applying around Phase 5 when the story is strong enough.
 
 ---
 
-## What I have learned so far
+## Daily Log
 
 ### Day 1
 
@@ -145,8 +145,6 @@ POST, GET all, and GET by ID — all tested and working.
 The pattern is becoming familiar. The second set of routes took a fraction
 of the time the first set did. That is what repetition does.
 
----
-
 ### Day 6
 
 Built Reward API routes — POST, GET all, and GET by ID.
@@ -155,7 +153,17 @@ from the wrong directory. Fixed in one step.
 The pattern that took hours on Day 4 now takes minutes.
 Installed VS Code. The development environment is fully professional now.
 
-## Things I want to remember
+### Day 7
+
+Built the two logic routes that make IncentiRise actually work as a rewards system.
+POST /complete-task — a user completes a task and earns points.
+POST /redeem-reward — a user spends points on a reward.
+Tested the full loop end to end: user started at 0 points, earned 50, spent 30, ended at 20.
+Every action recorded in the database. The app is no longer just storing data — it is doing something.
+
+---
+
+## Things I Want to Remember
 
 The people who make it are not the ones who never get stuck.
 They are the ones who get stuck, figure it out, and keep going.
@@ -176,12 +184,10 @@ I am building.
 
 ---
 
-## Current status
+## Current Status
 
-Phase 1 — Day 7 starting next session.
-Users, Tasks, and Rewards API routes are complete and tested.
-Ten routes total. All committed and pushed to GitHub.
-macOS is fully set up as a secondary development machine.
-VS Code installed and configured.
-Day 7 introduces real logic — multi-step database operations.
-The foundation is done. Now the app starts to actually work..
+Phase 1 — Day 8 up next.
+Twelve routes total — Users, Tasks, Rewards, and the full rewards logic loop.
+All committed and pushed to GitHub.
+Day 8 completes Phase 1 with input validation and standardized error handling.
+After that, Phase 2 begins — Git Workflow and Code Discipline.
