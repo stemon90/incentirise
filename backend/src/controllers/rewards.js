@@ -8,7 +8,7 @@ export async function createReward(req, res) {
       data: { title, description, pointCost },
     });
     res.status(201).json(reward);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -17,7 +17,7 @@ export async function getAllRewards(req, res) {
   try {
     const rewards = await prisma.reward.findMany();
     res.json(rewards);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -33,7 +33,7 @@ export async function getRewardById(req, res) {
     const reward = await prisma.reward.findUnique({ where: { id } });
     if (!reward) return res.status(404).json({ error: "Reward not found" });
     res.json(reward);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
