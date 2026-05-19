@@ -1,101 +1,62 @@
-# IncentiRise
+---
 
-A full-stack rewards and accountability platform where users complete tasks to earn points
-and redeem them for rewards. Built as a progressive learning project to develop real-world
-Cloud and DevOps skills.
+## API Reference
+
+### Health
+
+| Method | Route     | Description         |
+| ------ | --------- | ------------------- |
+| GET    | /health   | Server health check |
+
+### Users
+
+| Method | Route         | Description      |
+| ------ | ------------- | ---------------- |
+| POST   | /users        | Create a user    |
+| GET    | /users        | Get all users    |
+| GET    | /users/:id    | Get user by ID   |
+
+### Tasks
+
+| Method | Route         | Description      |
+| ------ | ------------- | ---------------- |
+| POST   | /tasks        | Create a task    |
+| GET    | /tasks        | Get all tasks    |
+| GET    | /tasks/:id    | Get task by ID   |
+
+### Rewards
+
+| Method | Route          | Description       |
+| ------ | -------------- | ----------------- |
+| POST   | /rewards       | Create a reward   |
+| GET    | /rewards       | Get all rewards   |
+| GET    | /rewards/:id   | Get reward by ID  |
+
+### Logic
+
+| Method | Route             | Description                     |
+| ------ | ----------------- | ------------------------------- |
+| POST   | /complete-task    | Complete a task and earn points |
+| POST   | /redeem-reward    | Redeem points for a reward      |
 
 ---
 
-## What it does
-
-- Users earn points by completing tasks
-- Points can be redeemed for rewards
-- Every transaction is logged with a full history
-- Admins can create and manage tasks and rewards
-
----
-
-## Tech Stack
-
-- **Frontend:** React + Vite (not started yet)
-- **Backend:** Node.js + Express
-- **Database:** PostgreSQL 16
-- **ORM:** Prisma 7
-- **Environment:** WSL2 Ubuntu 24.04 on Windows 11 (primary), macOS (secondary)
-
----
-
-## Project Structure
-incentirise/
-├── backend/
-│   ├── prisma/
-│   │   ├── schema.prisma         # Database models
-│   │   └── migrations/           # Migration history
-│   ├── src/
-│   │   ├── index.js              # Express server entry point
-│   │   ├── routes/
-│   │   │   ├── users.js          # User API routes
-│   │   │   ├── tasks.js          # Task API routes
-│   │   │   └── rewards.js        # Reward API routes
-│   │   ├── controllers/          # Empty — coming in Phase 2
-│   │   └── middleware/           # Empty — coming in Phase 2
-│   ├── prisma.config.ts          # Prisma 7 configuration
-│   ├── package.json
-│   └── .env                      # Not committed — contains DATABASE_URL
-├── frontend/                     # Not started yet
-├── JOURNEY.md                    # Personal career journey log
-├── LEARNING.md                   # Concepts and study notes by session
-├── PROGRESS.md                   # Detailed session-by-session progress log
-└── README.md
-
----
-
-## Database Models
-
-- **User** — name, email, point balance
-- **Task** — title, description, point value
-- **TaskCompletion** — links a user to a completed task
-- **Reward** — title, description, point cost
-- **Transaction** — records every point redemption
-
----
-
-## API Routes
-
-| Method | Route          | Description            |
-| ------ | -------------- | ---------------------- |
-| GET    | /health        | Server health check    |
-| POST   | /users         | Create a user          |
-| GET    | /users         | Get all users          |
-| GET    | /users/:id     | Get a user by ID       |
-| POST   | /tasks         | Create a task          |
-| GET    | /tasks         | Get all tasks          |
-| GET    | /tasks/:id     | Get a task by ID       |
-| POST   | /rewards       | Create a reward        |
-| GET    | /rewards       | Get all rewards        |
-| GET    | /rewards/:id   | Get a reward by ID     |
-
-More routes coming as the project progresses.
-
----
-
-## Running Locally
+## Getting Started
 
 ### Prerequisites
 
 - Node.js 20+
 - PostgreSQL 16
-- WSL2 Ubuntu (if on Windows) or macOS
+- WSL2 Ubuntu (Windows) or macOS
 
 ### Setup
 
 ```bash
 # Clone the repository
 git clone https://github.com/stemon90/incentirise.git
-cd incentirise
+cd incentirise/backend
 
 # Install dependencies
-cd backend
 npm install
 
 # Create your .env file
@@ -111,34 +72,48 @@ npx prisma migrate deploy
 node src/index.js
 ```
 
-Server runs on http://localhost:3000
+Server runs on `http://localhost:3000`
 
 ---
 
-## Learning Roadmap
+## Roadmap
 
-This project is being built in phases to develop real Cloud and DevOps skills:
+### Phase 1 — Core App ✅
 
-| Phase | Focus                                 | Status      |
-| ----- | ------------------------------------- | ----------- |
-| 1     | Core App — Local MVP                  | In progress |
-| 2     | Code Discipline + Git Workflow        | Not started |
-| 3     | Dockerization                         | Not started |
-| 4     | CI/CD with GitHub Actions             | Not started |
-| 5     | Cloud Deployment on AWS               | Not started |
-| 6     | Infrastructure as Code with Terraform | Not started |
-| 7     | Observability + Reliability           | Not started |
-| 8     | Scaling + Architecture                | Not started |
+Local MVP. REST API with full CRUD, input validation, error handling, and a working
+points and rewards loop.
 
----
+### Phase 2 — Git Workflow 🔄
 
-## Career Goal
+Feature branch workflow, branch protection, conventional commits, code discipline.
 
-Transition into a Cloud or DevOps Engineer role at $100k+ after tax.
-Target certifications: AWS Cloud Practitioner, AWS Solutions Architect Associate, Terraform Associate.
+### Phase 3 — Dockerization
+
+Containerize the app and database. Learn Docker fundamentals.
+
+### Phase 4 — CI/CD with GitHub Actions
+
+Automated testing and deployment pipeline.
+
+### Phase 5 — Cloud Deployment on AWS
+
+Deploy to AWS. Learn EC2, RDS, and networking fundamentals.
+
+### Phase 6 — Infrastructure as Code
+
+Provision infrastructure with Terraform.
+
+### Phase 7 — Observability
+
+Logging, metrics, alerting, and reliability practices.
+
+### Phase 8 — Scaling and Architecture
+
+Load balancing, horizontal scaling, architectural patterns.
 
 ---
 
 ## Author
 
-Steven — career changer, learning in public.
+Steven — career changer building in public.  
+Target certifications: AWS Cloud Practitioner → AWS Solutions Architect Associate → Terraform Associate.
