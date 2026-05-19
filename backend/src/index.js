@@ -31,5 +31,6 @@ app.get("/health", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  // eslint-disable-next-line no-console
+  console.log(`Server running on port 3000`);
 });

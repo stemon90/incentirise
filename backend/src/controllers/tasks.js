@@ -8,7 +8,7 @@ export async function createTask(req, res) {
       data: { title, description, points },
     });
     res.status(201).json(task);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -17,7 +17,7 @@ export async function getAllTasks(req, res) {
   try {
     const tasks = await prisma.task.findMany();
     res.json(tasks);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -33,7 +33,7 @@ export async function getTaskById(req, res) {
     const task = await prisma.task.findUnique({ where: { id } });
     if (!task) return res.status(404).json({ error: "Task not found" });
     res.json(task);
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }

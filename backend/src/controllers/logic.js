@@ -10,7 +10,7 @@ export async function completeTask(req, res) {
     const task = await prisma.task.findUnique({ where: { id: taskId } });
     if (!task) return res.status(404).json({ error: "Task not found" });
 
-    const [completion, updatedUser] = await prisma.$transaction([
+    const [_completion, updatedUser] = await prisma.$transaction([
       prisma.taskCompletion.create({
         data: { userId, taskId },
       }),
@@ -21,7 +21,7 @@ export async function completeTask(req, res) {
     ]);
 
     res.json({ message: "Task completed", points: updatedUser.points });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
@@ -40,7 +40,7 @@ export async function redeemReward(req, res) {
       return res.status(400).json({ error: "Insufficient points" });
     }
 
-    const [transaction, updatedUser] = await prisma.$transaction([
+    const [_transaction, updatedUser] = await prisma.$transaction([
       prisma.transaction.create({
         data: { userId, rewardId, pointsSpent: reward.pointCost },
       }),
@@ -51,7 +51,7 @@ export async function redeemReward(req, res) {
     ]);
 
     res.json({ message: "Reward redeemed", points: updatedUser.points });
-  } catch (err) {
+  } catch (_err) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
