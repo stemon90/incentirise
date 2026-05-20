@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: stevenuser
+      POSTGRES_PASSWORD: Metalton08!
+      POSTGRES_DB: incentirise
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://stevenuser:Metalton08!@db:5432/incentirise
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
