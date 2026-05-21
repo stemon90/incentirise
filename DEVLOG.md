@@ -7,7 +7,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Stack
 
-- Frontend: React + Vite (not started yet)
+- Frontend: React + Vite
 - Backend: Node.js + Express
 - ORM: Prisma v7
 - Database: PostgreSQL 16
@@ -27,6 +27,11 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - PostgreSQL port: 5432
 - Prisma config: prisma.config.ts (Prisma v7 requirement)
 - Connection string: postgresql://stevenuser:PASSWORD@localhost:5432/incentirise
+
+### WSL2 (Primary going forward)
+
+- Project path: ~/projects/incentirise
+- All development now happens on the Linux filesystem for better Docker and Vite performance
 
 ### macOS (Secondary)
 
@@ -48,7 +53,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 4 complete — Phase 5 up next
+Phase 5 complete — Phase 6 up next
 
 ---
 
@@ -166,6 +171,18 @@ Phase 4 complete — Phase 5 up next
 - Added CI status badge to README
 - **Phase 4 complete**
 
+### Phase 5 — Day 11
+
+- Moved project from Windows filesystem (/mnt/c/) to WSL2 Linux filesystem (~/projects/incentirise)
+- Scaffolded React + Vite frontend with npm create vite@latest
+- Replaced Vite boilerplate with IncentiRise UI
+- Built Users component — create users, display list with point balances
+- Built Tasks component — create tasks, select user, complete task, earn points
+- Built Rewards component — create rewards, select user, redeem reward, spend points
+- Replaced App.css with clean minimal styles — nav tabs, form layout, error and success states
+- Full points loop verified working end to end in the browser
+- **Phase 5 complete**
+
 ---
 
 ## Key Decisions
@@ -175,9 +192,10 @@ Phase 4 complete — Phase 5 up next
 - AWS over Azure — larger job market, better cert recognition
 - Prisma v7 requires connection URL in prisma.config.ts, not schema.prisma
 - Prisma v7 requires @prisma/adapter-pg for direct PostgreSQL connections
-- Project files stay on Windows filesystem for now — revisit when Docker is introduced
+- Project moved to WSL2 Linux filesystem — better Docker and Vite performance, consistent with cloud environment
 - Single shared Prisma instance exported from index.js and imported by all route files
 - CI pipeline runs lint and Docker build — catches broken code and broken images before they reach main
+- Frontend built with React + Vite — fast dev server, standard React toolchain
 
 ---
 
@@ -210,3 +228,10 @@ Phase 4 complete — Phase 5 up next
 - Personal Access Token requires workflow scope to push files under .github/workflows/
 - Use git credential reject to clear cached tokens after regenerating
 - CI runs two independent jobs — lint and docker-build — both must pass for the pipeline to be green
+
+### Vite / Frontend
+
+- npm create vite@latest uses the folder name as given — verify it matches expected name before proceeding
+- .gitkeep placeholder in frontend/ folder must be removed before renaming
+- Frontend dev server runs on http://localhost:5173 by default
+- Backend must be running on http://localhost:3000 for API calls to work
