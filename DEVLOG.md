@@ -48,7 +48,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 2 — Day 9 (in progress)
+Phase 4 complete — Phase 5 up next
 
 ---
 
@@ -154,6 +154,17 @@ Phase 2 — Day 9 (in progress)
 - Adopted conventional commits standard — all commits from Day 9 forward follow this format
 - Reviewed Phase 1 commit history and rewrote each entry in conventional format as a retrospective exercise
 - Opened and merged first pull request — no longer pushing directly to main
+- **Phase 2 complete**
+
+### Phase 4 — Day 10
+
+- Created .github/workflows/ci.yml — GitHub Actions workflow triggered on push and PR to main
+- Added lint job — installs dependencies with npm ci, runs ESLint against src/
+- Added docker-build job — builds backend Docker image to verify it compiles cleanly
+- Resolved PAT scope error — added workflow scope to Personal Access Token
+- Pipeline ran successfully on both PR open and merge to main
+- Added CI status badge to README
+- **Phase 4 complete**
 
 ---
 
@@ -166,6 +177,7 @@ Phase 2 — Day 9 (in progress)
 - Prisma v7 requires @prisma/adapter-pg for direct PostgreSQL connections
 - Project files stay on Windows filesystem for now — revisit when Docker is introduced
 - Single shared Prisma instance exported from index.js and imported by all route files
+- CI pipeline runs lint and Docker build — catches broken code and broken images before they reach main
 
 ---
 
@@ -192,3 +204,9 @@ Phase 2 — Day 9 (in progress)
 - Always create .env manually — never committed to Git
 - Never instantiate a second PrismaClient in route files — import the shared instance from index.js
 - Server must be started from inside the backend/ folder or .env will not load
+
+### GitHub Actions
+
+- Personal Access Token requires workflow scope to push files under .github/workflows/
+- Use git credential reject to clear cached tokens after regenerating
+- CI runs two independent jobs — lint and docker-build — both must pass for the pipeline to be green

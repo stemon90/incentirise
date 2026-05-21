@@ -558,3 +558,91 @@ CI/CD pipelines in Phase 4 hook into branch activity. Deployments in Phase 5 tri
 | Branch protection      | A GitHub rule that prevents direct pushes to a protected branch                        |
 | Conventional commit    | A commit message format: type(scope): description                                      |
 | Force push             | Overwriting remote commit history — blocked on main by branch protection               |
+
+## Phase 2 — Days 10 & 11
+
+### Stats
+
+|                     |     |
+| ------------------- | --- |
+| Controllers created | 4   |
+| Files refactored    | 4   |
+| Lint errors fixed   | 16  |
+| Concepts learned    | 6   |
+
+### My notes — in my own words
+
+Today we made it so that the routes are not also controlling the logic by creating
+controllers and having them handle logic. Then we installed ESLint which checks your
+code and makes sure that it is not only functional but uniform. We tested to make sure
+all of the controllers worked and tidied up the code to make sure everything is connected.
+
+### Controllers and separation of concerns
+
+**Why controllers exist**
+Before this phase, route files did two jobs — they defined the URL pattern and contained
+all the logic for what happens when that route is hit. Controllers separate those two
+concerns. The route receives the request and hands it off. The controller handles what
+actually happens.
+
+**Separation of concerns**
+Each file has one job and one job only. Routes handle incoming requests. Controllers
+handle what happens because of them. When something breaks you know exactly where to
+look. When you want to change behavior you know exactly which file to touch.
+
+**The pattern**
+Before:
+
+- routes/users.js — defines the route AND queries the database
+
+After:
+
+- routes/users.js — defines the route, calls the controller
+- controllers/users.js — handles the logic, talks to Prisma
+
+**Prisma transactions**
+The logic controller was also upgraded to use prisma.$transaction(). This means if
+either the point update or the completion record fails, both operations roll back.
+Previously they were separate calls, so a crash halfway through could leave the
+database in a bad state.
+
+### ESLint
+
+**What ESLint is**
+A code quality enforcer. It reads your code without running it and flags problems —
+unused variables, inconsistent patterns, missing error handling, or code that is likely
+to cause bugs. Runs in the background in VS Code and can be run across the whole
+project with npm run lint.
+
+**Why it matters for DevOps**
+In Phase 4 when CI/CD is set up with GitHub Actions, ESLint will run automatically on
+every push. If the code has lint errors, the pipeline fails and nothing deploys. That
+is industry standard.
+
+**The underscore convention**
+Variables prefixed with an underscore — like \_err or \_completion — signal to ESLint
+that the variable is intentionally unused. This is a widely recognized convention,
+not just a config workaround.
+
+**ESLint vs Prettier**
+ESLint catches logical problems and bad patterns. Prettier handles formatting —
+indentation, line length, quote style. ESLint is an editor checking if the writing
+makes sense. Prettier is a typesetter making sure it looks consistent.
+
+**The lint script**
+Added to package.json so the whole project can be checked with one command:
+npm run lint
+
+### Vocabulary
+
+| Term                      | Definition                                                                 |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Controller                | A file that handles the logic for a route — separate from the route itself |
+| Separation of concerns    | Each file or module has one job and one job only                           |
+| ESLint                    | A tool that checks code for quality issues without running it              |
+| Linter                    | Any tool that statically analyzes code for errors and style issues         |
+| Prisma transaction        | A set of database operations that either all succeed or all roll back      |
+| npm run lint              | The command that runs ESLint across the entire src/ folder                 |
+| no-unused-vars            | ESLint rule that warns when a variable is declared but never used          |
+| caughtErrorsIgnorePattern | ESLint option that ignores catch variables matching a pattern              |
+| Underscore convention     | Prefixing a variable with \_ to signal it is intentionally unused          |
