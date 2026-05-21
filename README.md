@@ -1,3 +1,5 @@
+[![CI](https://github.com/stemon90/incentirise/actions/workflows/ci.yml/badge.svg)](https://github.com/stemon90/incentirise/actions/workflows/ci.yml)
+
 ## Roadmap
 
 ### Phase 1 — Core App ✅
