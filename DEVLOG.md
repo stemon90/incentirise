@@ -11,27 +11,22 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Backend: Node.js + Express
 - ORM: Prisma v7
 - Database: PostgreSQL 16
+- Infrastructure: AWS (EC2, RDS) + Terraform
 - Environment: Windows 11 + WSL2 Ubuntu 24.04 (primary), macOS (secondary)
 - Editor: VS Code with Ubuntu terminal as default shell
 - Version Control: Git + GitHub
 
 ## Environment Details
 
-### Windows (Primary)
-
-- Project path (Windows): C:\Users\Steven\incentirise
-- Project path (Ubuntu): /mnt/c/Users/Steven/incentirise
-- Backend: /mnt/c/Users/Steven/incentirise/backend
-- PostgreSQL user: stevenuser
-- PostgreSQL database: incentirise
-- PostgreSQL port: 5432
-- Prisma config: prisma.config.ts (Prisma v7 requirement)
-- Connection string: postgresql://stevenuser:PASSWORD@localhost:5432/incentirise
-
-### WSL2 (Primary going forward)
+### WSL2 (Primary)
 
 - Project path: ~/projects/incentirise
-- All development now happens on the Linux filesystem for better Docker and Vite performance
+- All development happens on the Linux filesystem for better Docker and Vite performance
+
+### Windows (Legacy)
+
+- Project path (Windows): C:\Users\Steven\incentirise
+- No longer used for active development
 
 ### macOS (Secondary)
 
@@ -51,9 +46,16 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 - Reward (id, title, description, pointCost, createdAt)
 - Transaction (id, userId, rewardId, pointsSpent, createdAt)
 
+## AWS Infrastructure (Terraform-managed)
+
+- EC2: t2.micro, Amazon Linux 2023, us-east-1
+- RDS: db.t3.micro, PostgreSQL 16, us-east-1
+- Security groups: incentirise-backend-sg-tf, incentirise-db-sg-tf
+- Terraform state: local (terraform/terraform.tfstate)
+
 ## Current Position
 
-Phase 5 complete — Phase 6 up next
+Phase 7 complete — Phase 8 up next
 
 ---
 
@@ -183,6 +185,33 @@ Phase 5 complete — Phase 6 up next
 - Full points loop verified working end to end in the browser
 - **Phase 5 complete**
 
+### Phase 6 — Day 12
+
+- Created IAM user steven-admin — root account no longer used for daily work
+- Installed and configured AWS CLI in WSL2
+- Created key pair incentirise-key for EC2 SSH access
+- Created security groups for backend (ports 22, 80, 3000) and database (port 5432)
+- Launched RDS PostgreSQL 16 instance on db.t3.micro
+- Launched EC2 t2.micro instance with Amazon Linux 2023
+- Installed Docker and Docker Compose on EC2
+- Cloned repo and deployed backend via Docker Compose on EC2
+- Verified /health endpoint publicly accessible at 54.91.0.108:3000
+- **Phase 6 complete**
+
+### Phase 7 — Day 13
+
+- Installed Terraform via HashiCorp apt repository
+- Created terraform/ directory with variables.tf, outputs.tf, main.tf, and .gitignore
+- Defined all AWS infrastructure as code — security groups, RDS, EC2
+- Ran terraform init — downloaded AWS provider v5.100.0
+- Ran terraform plan — previewed 4 resources to create
+- Ran terraform apply — provisioned full infrastructure automatically
+- EC2 public IP: 34.228.53.220
+- RDS endpoint: incentirise-db-tf.c210yk2gc8vk.us-east-1.rds.amazonaws.com
+- Cleaned up Phase 6 manual resources — terminated EC2, deleted RDS, removed security groups
+- Only Terraform-managed infrastructure remains in AWS
+- **Phase 7 complete**
+
 ---
 
 ## Key Decisions
@@ -196,12 +225,14 @@ Phase 5 complete — Phase 6 up next
 - Single shared Prisma instance exported from index.js and imported by all route files
 - CI pipeline runs lint and Docker build — catches broken code and broken images before they reach main
 - Frontend built with React + Vite — fast dev server, standard React toolchain
+- IAM user for daily AWS work — root account reserved for billing and account-level settings
+- Terraform for all infrastructure — reproducible, version controlled, single command provisioning
 
 ---
 
 ## Known Gotchas
 
-### Windows
+### WSL2
 
 - PostgreSQL must be started manually each session: sudo service postgresql start
 - Prisma v7 does not accept url = env("DATABASE_URL") in schema.prisma
@@ -235,3 +266,14 @@ Phase 5 complete — Phase 6 up next
 - .gitkeep placeholder in frontend/ folder must be removed before renaming
 - Frontend dev server runs on http://localhost:5173 by default
 - Backend must be running on http://localhost:3000 for API calls to work
+
+### AWS / Terraform
+
+- Always work in us-east-1 — console defaults can switch regions silently
+- IAM user requires workflow scope on PAT to push GitHub Actions workflows
+- Terraform state file (terraform.tfstate) must never be committed to Git
+- Delete dependent security groups in reverse dependency order
+- EC2 must fully terminate before its security group can be deleted
+- AWS CLI and console must be in the same region or resources won't be visible
+- RDS takes 5-10 minutes to become available after creation
+- EC2 public IP changes if instance is stopped and restarted — use Elastic IP for stable addressing
