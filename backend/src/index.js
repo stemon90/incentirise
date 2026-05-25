@@ -3,6 +3,7 @@ import cors from "cors";
 import "dotenv/config";
 import pkg from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import logger from "./logger.js";
 
 const { PrismaClient } = pkg;
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -12,6 +13,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+app.use((req, res, next) => {
+  logger.info({ method: req.method, url: req.url, ip: req.ip });
+  next();
+});
 
 import usersRouter from "./routes/users.js";
 app.use("/users", usersRouter);
@@ -31,6 +37,5 @@ app.get("/health", (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Server running on port 3000`);
+  logger.info(`Server running on port ${PORT}`);
 });
