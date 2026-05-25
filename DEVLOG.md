@@ -212,6 +212,21 @@ Phase 7 complete — Phase 8 up next
 - Only Terraform-managed infrastructure remains in AWS
 - **Phase 7 complete**
 
+### Phase 8 — Day 14
+
+- Installed Winston logging library in backend
+- Created backend/src/logger.js — structured JSON logger with timestamp, level, and message
+- Added request logging middleware to index.js — logs every incoming request with method, URL, and IP
+- Fixed logs directory — added RUN mkdir -p logs to Dockerfile and fs.mkdirSync to logger.js
+- Updated docker-compose.yml to mount ./backend/logs:/app/logs so host can read container logs
+- Moved DB_PASSWORD out of docker-compose.yml into .env — password no longer hardcoded in repo
+- Created IAM role incentirise-ec2-role with CloudWatchAgentServerPolicy
+- Created IAM instance profile and attached to EC2 instance
+- Installed amazon-cloudwatch-agent on EC2
+- Configured CloudWatch agent to ship combined.log and error.log to log group "incentirise"
+- Verified logs flowing into CloudWatch — backend-combined stream showing live request logs
+- **Phase 8 complete**
+
 ---
 
 ## Key Decisions
@@ -277,3 +292,11 @@ Phase 7 complete — Phase 8 up next
 - AWS CLI and console must be in the same region or resources won't be visible
 - RDS takes 5-10 minutes to become available after creation
 - EC2 public IP changes if instance is stopped and restarted — use Elastic IP for stable addressing
+
+### Observability
+
+- Logs directory must be created in Dockerfile with RUN mkdir -p logs — Winston won't create it automatically
+- Docker volume mount required for CloudWatch agent to read logs from host filesystem
+- EC2 instance requires IAM role with CloudWatchAgentServerPolicy to ship logs to CloudWatch
+- CloudWatch agent config must point to host filesystem path, not container path
+- Pull from feature branch on EC2 when changes aren't merged to main yet
