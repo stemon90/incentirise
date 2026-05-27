@@ -227,6 +227,21 @@ Phase 7 complete — Phase 8 up next
 - Verified logs flowing into CloudWatch — backend-combined stream showing live request logs
 - **Phase 8 complete**
 
+### Phase 9 — Day 15
+
+- Added data sources to Terraform for default VPC and subnets
+- Created ALB security group allowing port 80 inbound
+- Created Application Load Balancer (internet-facing) across all 6 default subnets
+- Created target group with health checks on /health port 3000
+- Created ALB listener forwarding port 80 to target group
+- Created launch template mirroring existing EC2 configuration
+- Created Auto Scaling Group — min=1, desired=1, max=3
+- Created target tracking scaling policy — scales out at 70% average CPU
+- Registered existing EC2 with target group — health checks passing
+- Verified traffic flowing through ALB: incentirise-alb-tf-2134160699.us-east-1.elb.amazonaws.com/health returns {"status":"ok"}
+- ASG instances are unhealthy (no app deployed) — to be solved in Phase 10
+- **Phase 9 complete**
+
 ---
 
 ## Key Decisions
