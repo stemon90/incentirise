@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 7 complete — Phase 8 up next
+Phase 10 complete — Phase 11 up next
 
 ---
 
@@ -241,6 +241,22 @@ Phase 7 complete — Phase 8 up next
 - Verified traffic flowing through ALB: incentirise-alb-tf-2134160699.us-east-1.elb.amazonaws.com/health returns {"status":"ok"}
 - ASG instances are unhealthy (no app deployed) — to be solved in Phase 10
 - **Phase 9 complete**
+
+### Phase 10 — Day 16
+
+- Added frontend Dockerfile using multi-stage build — Node to build, nginx to serve
+- Updated all three components to use VITE_API_URL environment variable instead of hardcoded localhost
+- Added frontend service to docker-compose.yml with VITE_API_URL build arg
+- Created frontend/.env for local development pointing to localhost:3000
+- Added VITE_API_URL to root .env pointing to ALB DNS name for production
+- Fixed root .gitignore — removed overly broad package.json and package-lock.json exclusions
+- Added frontend package.json and package-lock.json to Git
+- Changed frontend Dockerfile from npm ci to npm install to handle missing lockfile
+- Opened port 8080 in backend security group for frontend access
+- Deployed full stack to EC2 via docker compose up --build
+- Verified full stack publicly accessible at http://34.228.53.220:8080
+- Tested complete points loop through the deployed app — all features working
+- **Phase 10 complete**
 
 ---
 
