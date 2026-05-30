@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 10 complete — Phase 11 up next
+Phase 13 complete — Phase 14 up next
 
 ---
 
@@ -257,6 +257,29 @@ Phase 10 complete — Phase 11 up next
 - Verified full stack publicly accessible at http://34.228.53.220:8080
 - Tested complete points loop through the deployed app — all features working
 - **Phase 10 complete**
+
+### Phase 12 — Day 17
+
+- Added deploy job to .github/workflows/ci.yml
+- Deploy job runs only on push to main, after lint and docker-build pass
+- Configured appleboy/ssh-action to SSH into EC2 and run git pull + docker compose up --build
+- Added EC2_HOST, EC2_USER, and EC2_SSH_KEY to GitHub Secrets
+- Merged PR — pipeline ran successfully, all three jobs green
+- App auto-deployed to EC2 without manual SSH
+- **Phase 12 complete**
+
+### Phase 13 — Day 18
+
+- Created AWS Secrets Manager secret incentirise/env with DB_PASSWORD and VITE_API_URL
+- Attached SecretsManagerReadWrite policy to incentirise-ec2-role
+- Wrote terraform/user_data.sh — installs Docker, Docker Compose, clones repo, fetches secrets, writes .env, starts app
+- Updated aws_launch_template in main.tf to use user_data.sh via file() reference
+- Added iam_instance_profile block to launch template — new instances can read Secrets Manager
+- Ran terraform apply — launch template updated with new user data and IAM profile
+- Terminated existing ASG instance to force replacement
+- New instance booted, fetched secrets, and started app automatically
+- ALB health check returned {"status":"ok"} — self-healing infrastructure verified
+- **Phase 13 complete**
 
 ---
 
