@@ -190,16 +190,13 @@ resource "aws_launch_template" "backend" {
   instance_type = "t2.micro"
   key_name      = var.key_name
 
+  iam_instance_profile {
+    name = "incentirise-ec2-profile"
+  }
+
   vpc_security_group_ids = [aws_security_group.backend.id]
 
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    yum update -y
-    yum install -y docker git
-    service docker start
-    usermod -a -G docker ec2-user
-  EOF
-  )
+  user_data = base64encode(file("${path.module}/user_data.sh"))
 
   tag_specifications {
     resource_type = "instance"
