@@ -5,6 +5,14 @@ terraform {
       version = "~> 5.0"
     }
   }
+
+  backend "s3" {
+    bucket       = "incentirise-terraform-state"
+    key          = "terraform.tfstate"
+    region       = "us-east-1"
+    use_lockfile = true
+    encrypt      = true
+  }
 }
 
 provider "aws" {
@@ -95,13 +103,7 @@ resource "aws_instance" "backend" {
   key_name        = var.key_name
   security_groups = [aws_security_group.backend.name]
 
-  user_data = <<-EOF
-    #!/bin/bash
-    yum update -y
-    yum install -y docker git
-    service docker start
-    usermod -a -G docker ec2-user
-  EOF
+  user_data = base64encode(file("${path.module}/user_data.sh"))
 
   tags = {
     Name = "incentirise-backend-tf"
