@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 13 complete — Phase 14 up next
+Phase 14 complete — DevOps portfolio complete
 
 ---
 
@@ -280,6 +280,22 @@ Phase 13 complete — Phase 14 up next
 - New instance booted, fetched secrets, and started app automatically
 - ALB health check returned {"status":"ok"} — self-healing infrastructure verified
 - **Phase 13 complete**
+
+### Phase 14 — Day 19
+
+- Created S3 bucket incentirise-terraform-state for remote state storage
+- Enabled versioning on S3 bucket for state file recovery
+- Created DynamoDB table incentirise-terraform-locks for state locking
+- Added S3 backend block to terraform block in main.tf
+- Ran terraform init -migrate-state — local state migrated to S3
+- Verified state file present in S3 bucket
+- Fixed launch template — replaced old inline user data heredoc with file() reference to user_data.sh
+- Added iam_instance_profile block to launch template
+- Ran terraform apply — launch template recreated with correct user data and IAM profile
+- Verified correct Phase 13 script present in new launch template via base64 decode
+- terraform plan shows no changes — Terraform and AWS fully in sync
+- State is now stored remotely in S3 with DynamoDB locking
+- **Phase 14 complete — DevOps portfolio complete**
 
 ---
 
