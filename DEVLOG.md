@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 14 complete — DevOps portfolio complete
+Phase 15 complete — Phase 16 up next
 
 ---
 
@@ -296,6 +296,21 @@ Phase 14 complete — DevOps portfolio complete
 - terraform plan shows no changes — Terraform and AWS fully in sync
 - State is now stored remotely in S3 with DynamoDB locking
 - **Phase 14 complete — DevOps portfolio complete**
+
+### Phase 15 — Day 20
+
+- Designed V2 product schema based on real IncentiRise vision
+- Models: Organization, Staff, Youth, Behavior, PointTransaction, Prize, Redemption
+- Staff roles: Admin and Leader
+- Youth have auto-generated QR codes
+- Behaviors have min/max point ranges to support sliding scale effort system
+- PointTransaction logs every award with staff, youth, behavior, amount, and note
+- Prizes have requiresAdmin flag for big ticket item approval workflow
+- Redemptions have PENDING/APPROVED/REJECTED status
+- Dropped all V1 tables: User, Task, TaskCompletion, Reward, Transaction
+- Ran prisma migrate dev — new schema applied cleanly
+- Ran prisma generate — client updated
+- **Phase 15 complete**
 
 ---
 
