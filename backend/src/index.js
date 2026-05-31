@@ -31,6 +31,7 @@ import pointsRouter from "./routes/points.js";
 import prizesRouter from "./routes/prizes.js";
 import redemptionsRouter from "./routes/redemptions.js";
 import qrRouter from "./routes/qr.js";
+import behaviorRequestsRouter from "./routes/behaviorRequests.js";
 
 app.use("/auth", authRouter);
 app.use("/organizations", organizationsRouter);
@@ -41,6 +42,7 @@ app.use("/points", pointsRouter);
 app.use("/prizes", prizesRouter);
 app.use("/redemptions", redemptionsRouter);
 app.use("/qr", qrRouter);
+app.use("/behavior-requests", behaviorRequestsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

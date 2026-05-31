@@ -16,6 +16,7 @@ model Organization {
   youth     Youth[]
   behaviors Behavior[]
   prizes    Prize[]
+  behaviorRequests BehaviorRequest[]
 }
 
 model Staff {
@@ -31,6 +32,7 @@ model Staff {
   organization      Organization       @relation(fields: [organizationId], references: [id])
   pointTransactions PointTransaction[]
   redemptions       Redemption[]
+  behaviorRequests BehaviorRequest[]
 }
 
 model Youth {
@@ -71,6 +73,8 @@ model PointTransaction {
   points     Int
   note       String?
   createdAt  DateTime @default(now())
+  behaviorRequestId Int?
+  behaviorRequest   BehaviorRequest? @relation(fields: [behaviorRequestId], references: [id])
 
   youth    Youth    @relation(fields: [youthId], references: [id])
   staff    Staff    @relation(fields: [staffId], references: [id])
@@ -105,12 +109,35 @@ model Redemption {
   staff Staff? @relation(fields: [staffId], references: [id])
 }
 
+model BehaviorRequest {
+  id             Int                   @id @default(autoincrement())
+  name           String
+  description    String?
+  minPoints      Int
+  maxPoints      Int
+  organizationId Int
+  requestedById  Int
+  status         BehaviorRequestStatus @default(PENDING)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  organization  Organization       @relation(fields: [organizationId], references: [id])
+  requestedBy   Staff              @relation(fields: [requestedById], references: [id])
+  pointTransactions PointTransaction[]
+}
+
 enum Role {
   ADMIN
   LEADER
 }
 
 enum RedemptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BehaviorRequestStatus {
   PENDING
   APPROVED
   REJECTED

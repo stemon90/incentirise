@@ -1,44 +1,35 @@
-import { useState } from "react";
-import Users from "./components/Users";
-import Tasks from "./components/Tasks";
-import Rewards from "./components/Rewards";
-import "./App.css";
+import { useState, useEffect } from "react";
+import Login from "./components/Login";
+import Dashboard from "./components/Dashboard";
 
 function App() {
-  const [activeTab, setActiveTab] = useState("users");
+  const [staff, setStaff] = useState(null);
 
-  return (
-    <div className="app">
-      <header>
-        <h1>IncentiRise</h1>
-        <nav>
-          <button
-            onClick={() => setActiveTab("users")}
-            className={activeTab === "users" ? "active" : ""}
-          >
-            Users
-          </button>
-          <button
-            onClick={() => setActiveTab("tasks")}
-            className={activeTab === "tasks" ? "active" : ""}
-          >
-            Tasks
-          </button>
-          <button
-            onClick={() => setActiveTab("rewards")}
-            className={activeTab === "rewards" ? "active" : ""}
-          >
-            Rewards
-          </button>
-        </nav>
-      </header>
-      <main>
-        {activeTab === "users" && <Users />}
-        {activeTab === "tasks" && <Tasks />}
-        {activeTab === "rewards" && <Rewards />}
-      </main>
-    </div>
-  );
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const savedStaff = localStorage.getItem("staff");
+    if (token && savedStaff) {
+      setStaff(JSON.parse(savedStaff));
+    }
+  }, []);
+
+  const handleLogin = (staffData, token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("staff", JSON.stringify(staffData));
+    setStaff(staffData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("staff");
+    setStaff(null);
+  };
+
+  if (!staff) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  return <Dashboard staff={staff} onLogout={handleLogout} />;
 }
 
 export default App;
