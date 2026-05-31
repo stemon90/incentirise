@@ -10,7 +10,6 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
@@ -19,21 +18,12 @@ app.use((req, res, next) => {
   next();
 });
 
-import usersRouter from "./routes/users.js";
-app.use("/users", usersRouter);
-
-import tasksRouter from "./routes/tasks.js";
-app.use("/tasks", tasksRouter);
-
-import rewardsRouter from "./routes/rewards.js";
-app.use("/rewards", rewardsRouter);
-
-import logicRouter from "./routes/logic.js";
-app.use("/", logicRouter);
-
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
+
+import authRouter from "./routes/auth.js";
+app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
