@@ -27,12 +27,18 @@ import organizationsRouter from "./routes/organizations.js";
 import staffRouter from "./routes/staff.js";
 import youthRouter from "./routes/youth.js";
 import behaviorsRouter from "./routes/behaviors.js";
+import pointsRouter from "./routes/points.js";
+import prizesRouter from "./routes/prizes.js";
+import redemptionsRouter from "./routes/redemptions.js";
 
 app.use("/auth", authRouter);
 app.use("/organizations", organizationsRouter);
 app.use("/staff", staffRouter);
 app.use("/youth", youthRouter);
 app.use("/behaviors", behaviorsRouter);
+app.use("/points", pointsRouter);
+app.use("/prizes", prizesRouter);
+app.use("/redemptions", redemptionsRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
