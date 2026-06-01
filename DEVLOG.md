@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 15 complete — Phase 16 up next
+Phase 20 complete — V2 app ready for deployment
 
 ---
 
@@ -311,6 +311,63 @@ Phase 15 complete — Phase 16 up next
 - Ran prisma migrate dev — new schema applied cleanly
 - Ran prisma generate — client updated
 - **Phase 15 complete**
+
+### Phase 16 — Day 21
+
+- Installed bcrypt and jsonwebtoken
+- Created backend/src/routes/auth.js — staff registration and login
+- Created backend/src/middleware/auth.js — JWT authentication and role checking
+- Wired auth router into index.js
+- Added JWT_SECRET to backend .env
+- Tested registration and login via curl — both working
+- **Phase 16 complete**
+
+### Phase 17 — Day 21
+
+- Created backend/src/routes/organizations.js — create and get organizations
+- Created backend/src/routes/staff.js — get staff, get by ID, update role
+- Created backend/src/routes/youth.js — full CRUD with QR code auto-generation
+- Created backend/src/routes/behaviors.js — full CRUD, Admin only for write operations
+- Wired all four routers into index.js
+- Tested behavior creation and youth creation via curl — both working with JWT auth
+- **Phase 17 complete**
+
+### Phase 18 — Day 21
+
+- Created backend/src/routes/points.js — award points with sliding scale validation, full audit trail
+- Created backend/src/routes/prizes.js — full CRUD, Admin only for write operations
+- Created backend/src/routes/redemptions.js — create redemption, get pending, approve/reject
+- Points awarded atomically with youth balance update
+- Redemption approval deducts points and decrements prize quantity atomically
+- Big ticket prizes with requiresAdmin flag require Admin role to approve
+- Tested full loop via curl — points awarded, prize redeemed, redemption approved, points deducted
+- **Phase 18 complete**
+
+### Phase 19 — Day 21
+
+- Installed qrcode library
+- Created backend/src/routes/qr.js — generate QR image for youth, scan QR and return youth info with behaviors
+- QR codes are base64 PNG data URLs — renderable directly in img tags
+- Tested QR generation and scan endpoints via curl
+- **Phase 19 complete**
+
+### Phase 20 — Day 21
+
+- Installed axios in frontend
+- Created frontend/src/api.js — centralized API helper with JWT interceptor
+- Rebuilt App.jsx — auth state management, login/logout flow
+- Created Login.jsx — staff login screen with IncentiRise branding
+- Created Dashboard.jsx — tab navigation with staff name and role display
+- Created Youth.jsx — youth list, add youth, profile with QR code, point history, prize redemption
+- Created AwardPoints.jsx — search youth, select behavior, sliding scale point slider, submit
+- Created Prizes.jsx — prize catalog with Admin-only add/delete
+- Created Redemptions.jsx — pending redemption queue with approve/reject
+- Created Behaviors.jsx — behavior list, Admin direct add, Leader request with provisional points
+- Added behavior request system — Leaders submit requests, Admin approves/rejects, provisional points auto-reversed on rejection
+- Created prisma/seed.js — 15 default behaviors and 14 default prizes seeded
+- Added IncentiRise logo and orange/amber color scheme matching brand
+- Tested full product loop in browser — login, add youth, award points, redeem prize, approve redemption
+- **Phase 20 complete**
 
 ---
 
