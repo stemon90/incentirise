@@ -29,13 +29,14 @@ SECRET=$(aws secretsmanager get-secret-value \
 # Write .env file
 DB_PASSWORD=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['DB_PASSWORD'])")
 VITE_API_URL=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['VITE_API_URL'])")
-
 JWT_SECRET=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['JWT_SECRET'])")
+RDS_ENDPOINT=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['RDS_ENDPOINT'])")
 
 cat > .env <<ENVEOF
 DB_PASSWORD=${DB_PASSWORD}
 VITE_API_URL=${VITE_API_URL}
 JWT_SECRET=${JWT_SECRET}
+RDS_ENDPOINT=${RDS_ENDPOINT}
 ENVEOF
 
 # Start the app
