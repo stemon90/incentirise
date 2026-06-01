@@ -55,7 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 20 complete — V2 app ready for deployment
+Phase 20 complete — App live on AWS, connected to RDS, ready for Phase 11 (domain/HTTPS)
 
 ---
 
@@ -367,6 +367,46 @@ Phase 20 complete — V2 app ready for deployment
 - Created prisma/seed.js — 15 default behaviors and 14 default prizes seeded
 - Added IncentiRise logo and orange/amber color scheme matching brand
 - Tested full product loop in browser — login, add youth, award points, redeem prize, approve redemption
+
+### Deployment Session — Day 22
+
+**Goal:** Deploy V2 app to EC2 and change DB password.
+
+**What happened:**
+
+- Added JWT_SECRET to docker-compose.yml backend environment — was missing, causing login failures
+- Added JWT_SECRET to AWS Secrets Manager
+- Changed DB password in RDS, Secrets Manager, and local .env files
+- Discovered critical bug: docker-compose.yml was spinning up a local postgres container instead of connecting to RDS — data was being lost every time a new EC2 instance spun up
+- Fixed docker-compose.yml to remove local db service and point DATABASE_URL to RDS endpoint via ${RDS_ENDPOINT}
+- Added RDS_ENDPOINT to AWS Secrets Manager and user_data.sh
+- Fixed Docker Compose version — pinned to v2.24.0 to resolve "buildx 0.17.0 or later required" error
+- Increased ASG health check grace period from 120s to 600s — bootstrap was taking longer than grace period causing instances to be terminated mid-build
+- Manually registered new EC2 instance with ALB target group
+- Suspended and resumed ASG HealthCheck and ReplaceUnhealthy processes during stabilization
+- Created organization, admin account, and seeded default behaviors and prizes on RDS
+- App fully functional at http://3.236.65.55:8080 with data persisting in RDS
+
+**Current infrastructure state:**
+
+- EC2 instance: 3.236.65.55 (IP will change if instance is replaced — use ALB URL for stable access)
+- ALB: incentirise-alb-tf-2134160699.us-east-1.elb.amazonaws.com
+- Database: RDS PostgreSQL 16 at incentirise-db-tf.c210yk2gc8vk.us-east-1.rds.amazonaws.com
+- Secrets: All env vars in AWS Secrets Manager (incentirise/env) — DB_PASSWORD, JWT_SECRET, VITE_API_URL, RDS_ENDPOINT
+
+**Known issues to address:**
+
+- EC2 public IP changes on instance replacement — Phase 11 (domain/HTTPS) will fix this permanently
+- If a new instance spins up from the ASG, it will need org/admin/seed setup unless we add a startup script for this
+- JWT_SECRET should be rotated to a strong random value before going to real users
+
+**Next session priorities:**
+
+1. Start new chat — this thread is too long and slow
+2. Phase 11 — buy domain, set up Route 53, ACM certificate, HTTPS listener on ALB
+3. Rotate JWT_SECRET to a strong value
+4. Add org/seed setup to startup flow so new instances are self-sufficient
+
 - **Phase 20 complete**
 
 ---
