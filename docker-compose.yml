@@ -1,27 +1,14 @@
 services:
-  db:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: stevenuser
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: incentirise
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
   backend:
     build: ./backend
     restart: always
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://stevenuser:${DB_PASSWORD}@db:5432/incentirise
+      DATABASE_URL: postgresql://stevenuser:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/incentirise
       JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./backend/logs:/app/logs
-    depends_on:
-      - db
   frontend:
     build:
       context: ./frontend
@@ -32,5 +19,3 @@ services:
       - "8080:80"
     depends_on:
       - backend
-volumes:
-  postgres_data:
