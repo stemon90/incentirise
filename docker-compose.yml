@@ -5,8 +5,9 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://stevenuser:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/incentirise
+      DATABASE_URL: postgresql://stevenuser:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/incentirise?sslmode=require
       JWT_SECRET: ${JWT_SECRET}
+      NODE_TLS_REJECT_UNAUTHORIZED: "0"
     volumes:
       - ./backend/logs:/app/logs
   frontend:
