@@ -4,6 +4,7 @@ import AwardPoints from "./AwardPoints";
 import Prizes from "./Prizes";
 import Redemptions from "./Redemptions";
 import Behaviors from "./Behaviors";
+import Staff from "./Staff";
 
 function Dashboard({ staff, onLogout }) {
   const [activeTab, setActiveTab] = useState("youth");
@@ -45,6 +46,14 @@ function Dashboard({ staff, onLogout }) {
           >
             Redemptions
           </button>
+          {staff.role === "ADMIN" && (
+            <button
+              onClick={() => setActiveTab("staff")}
+              className={activeTab === "staff" ? "active" : ""}
+            >
+              Staff
+            </button>
+          )}
         </nav>
         <div className="header-right">
           <span className="staff-name">
@@ -62,6 +71,7 @@ function Dashboard({ staff, onLogout }) {
         {activeTab === "behaviors" && <Behaviors staff={staff} />}
         {activeTab === "prizes" && <Prizes staff={staff} />}
         {activeTab === "redemptions" && <Redemptions staff={staff} />}
+        {activeTab === "staff" && <Staff staff={staff} />}
       </main>
     </div>
   );

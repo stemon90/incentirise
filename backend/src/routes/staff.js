@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import { prisma } from "../index.js";
 import { authenticate, requireAdmin } from "../middleware/auth.js";
 
@@ -28,7 +29,6 @@ router.get("/", authenticate, async (req, res) => {
 // Get staff by ID
 router.get("/:id", authenticate, async (req, res) => {
   const id = parseInt(req.params.id);
-
   try {
     const member = await prisma.staff.findUnique({
       where: { id },
@@ -73,6 +73,48 @@ router.patch("/:id/role", authenticate, requireAdmin, async (req, res) => {
     res.json(member);
   } catch (err) {
     res.status(500).json({ error: "Failed to update role" });
+  }
+});
+
+// Create a new staff member (Admin only)
+router.post("/", authenticate, requireAdmin, async (req, res) => {
+  const { firstName, lastName, email, password, role } = req.body;
+
+  if (!firstName || !lastName || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+  if (role && !["ADMIN", "LEADER"].includes(role)) {
+    return res.status(400).json({ error: "Invalid role" });
+  }
+
+  try {
+    const existing = await prisma.staff.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    const member = await prisma.staff.create({
+      data: {
+        firstName,
+        lastName,
+        email,
+        passwordHash,
+        role: role || "LEADER",
+        organizationId: req.staff.organizationId,
+      },
+    });
+
+    res.status(201).json({
+      id: member.id,
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      role: member.role,
+      organizationId: member.organizationId,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create staff member" });
   }
 });
 
