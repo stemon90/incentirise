@@ -19,6 +19,8 @@ export const login = (email, password) =>
 
 export const register = (data) => api.post("/auth/register", data);
 
+export const registerOrg = (data) => api.post("/organizations/register", data);
+
 // Staff
 export const getStaff = () => api.get("/staff");
 export const createStaff = (data) => api.post("/staff", data);

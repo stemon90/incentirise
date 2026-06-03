@@ -26,6 +26,50 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Public registration — create org and first admin together
+router.post("/register", async (req, res) => {
+  const { orgName, pointName, firstName, lastName, email, password } = req.body;
+
+  if (!orgName || !firstName || !lastName || !email || !password) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const existing = await prisma.staff.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ error: "Email already in use" });
+    }
+
+    const bcrypt = await import("bcrypt");
+    const passwordHash = await bcrypt.default.hash(password, 10);
+
+    const org = await prisma.organization.create({
+      data: {
+        name: orgName,
+        pointName: pointName || "points",
+        staff: {
+          create: {
+            firstName,
+            lastName,
+            email,
+            passwordHash,
+            role: "ADMIN",
+          },
+        },
+      },
+    });
+
+    res.status(201).json({
+      message: "Organization created successfully",
+      orgId: org.id,
+      orgName: org.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Registration failed" });
+  }
+});
+
 // Get all organizations
 router.get("/", authenticate, async (req, res) => {
   try {
