@@ -839,3 +839,43 @@ main {
     width: 100%;
   }
 }
+
+/* ── Landscape phones and tablets ───────────────────────────────────────── */
+
+@media (max-width: 1024px) and (orientation: landscape) {
+  header {
+    flex-wrap: nowrap;
+    height: auto;
+    padding: 8px 16px;
+  }
+
+  nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  nav button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .header-right {
+    flex-shrink: 0;
+  }
+}
+
+/* ── Tablet ──────────────────────────────────────────────────────────────── */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  main {
+    padding: 20px;
+  }
+
+  .two-col {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .prize-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
