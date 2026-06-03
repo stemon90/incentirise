@@ -19,6 +19,12 @@ export const login = (email, password) =>
 
 export const register = (data) => api.post("/auth/register", data);
 
+// Staff
+export const getStaff = () => api.get("/staff");
+export const createStaff = (data) => api.post("/staff", data);
+export const updateStaffRole = (id, role) =>
+  api.patch(`/staff/${id}/role`, { role });
+
 // Youth
 export const getYouth = () => api.get("/youth");
 export const getYouthById = (id) => api.get(`/youth/${id}`);
