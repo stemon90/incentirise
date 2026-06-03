@@ -55,7 +55,9 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-Phase 20 complete — App live on AWS, connected to RDS, ready for Phase 11 (domain/HTTPS)
+## Current Position
+
+Phase 11 complete — incentirise.com live on HTTPS, data persisting in RDS, nginx proxy routing API calls internally
 
 ---
 
@@ -409,6 +411,42 @@ Phase 20 complete — App live on AWS, connected to RDS, ready for Phase 11 (dom
 
 - **Phase 20 complete**
 
+### Phase 11 — Day 23
+
+- Registered incentirise.com via Route 53 — domain cost ~$12/year
+- Requested SSL certificate via ACM with DNS validation — covers incentirise.com and \*.incentirise.com
+- Added CNAME validation record to Route 53 hosted zone — cert issued within minutes
+- Created HTTPS listener on ALB (port 443) with ACM cert attached
+- Updated HTTP listener (port 80) to redirect to HTTPS with 301
+- Opened port 443 on ALB security group
+- Created Route 53 A record aliasing incentirise.com to ALB DNS name
+- Created new ALB target group on port 8080 for frontend — old target group was pointing to port 3000 (backend)
+- Updated HTTPS listener to forward to frontend target group
+- Rotated JWT_SECRET to strong random value via openssl rand -base64 48
+- Updated all secrets in AWS Secrets Manager via file:// to avoid bash special character issues
+- Discovered docker-compose.yml was still pointing DATABASE_URL at local db container — fixed to use RDS via ${RDS_ENDPOINT}?sslmode=require
+- Added NODE_TLS_REJECT_UNAUTHORIZED=0 to backend environment — RDS uses self-signed cert
+- Added nginx reverse proxy config to frontend container — API routes proxied to backend:3000 internally
+- Updated frontend Dockerfile to copy nginx.conf into container
+- Rebuilt and redeployed — login working at https://incentirise.com
+- Created organization, admin account (steven@incentirise.com), and seeded behaviors and prizes
+- **Phase 11 complete**
+
+**Infrastructure state:**
+
+- Domain: incentirise.com (Route 53)
+- HTTPS: ACM cert, ALB HTTPS listener, HTTP→HTTPS redirect
+- EC2: 3.236.65.55 (use ALB or domain for stable access)
+- ALB: incentirise-alb-tf-2134160699.us-east-1.elb.amazonaws.com
+- RDS: incentirise-db-tf.c210yk2gc8vk.us-east-1.rds.amazonaws.com
+- Secrets: incentirise/env in AWS Secrets Manager
+
+**Known issues:**
+
+- Terraform not yet updated to reflect Phase 11 AWS changes (listeners, target group, Route 53, ACM)
+- user_data.sh needs updating so new ASG instances connect to RDS with SSL and start correctly
+- NODE_TLS_REJECT_UNAUTHORIZED=0 disables cert verification — acceptable for now, should be replaced with proper RDS CA cert verification later
+
 ---
 
 ## Key Decisions
@@ -482,3 +520,10 @@ Phase 20 complete — App live on AWS, connected to RDS, ready for Phase 11 (dom
 - EC2 instance requires IAM role with CloudWatchAgentServerPolicy to ship logs to CloudWatch
 - CloudWatch agent config must point to host filesystem path, not container path
 - Pull from feature branch on EC2 when changes aren't merged to main yet
+
+- RDS requires SSL — append ?sslmode=require to DATABASE_URL and set NODE_TLS_REJECT_UNAUTHORIZED=0 in docker environment
+- VITE_API_URL is baked into the frontend bundle at build time — changing it requires a full docker build --no-cache
+- nginx proxy required when frontend and backend share a domain — add location blocks to proxy API routes to backend:3000
+- AWS secrets with special characters (!) break bash heredoc — use file:// with aws secretsmanager update-secret instead
+- Docker build cache will reuse old layers even after .env changes — use --no-cache to force a clean frontend rebuild
+- git pull fails if files were edited with sudo on EC2 — fix with sudo chown -R ec2-user:ec2-user /home/ec2-user/incentirise
