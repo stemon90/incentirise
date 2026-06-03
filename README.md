@@ -48,9 +48,9 @@ Application Load Balancer, Auto Scaling Group, and target tracking scaling polic
 
 Frontend containerized with nginx, environment-aware API configuration, full stack deployed via Docker Compose.
 
-### Phase 11 — Domain and HTTPS
+### Phase 11 — Domain and HTTPS ✅
 
-Custom domain via Route 53, SSL certificate via ACM, HTTPS listener on ALB.
+Custom domain via Route 53, SSL certificate via ACM, HTTPS listener on ALB, HTTP to HTTPS redirect, and nginx reverse proxy for internal API routing.
 
 ### Phase 12 — CI/CD Deployment Pipeline ✅
 
