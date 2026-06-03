@@ -646,6 +646,45 @@ main {
   color: #f97316;
 }
 
+/* Staff */
+.staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.staff-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.staff-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.staff-email {
+  font-size: 13px;
+  color: #888;
+}
+
+.staff-actions select {
+  padding: 6px 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+}
+
+.staff-actions select:focus {
+  outline: none;
+  border-color: #f97316;
+}
+
 /* Misc */
 .error {
   color: #dc2626;
@@ -716,4 +755,87 @@ main {
   font-size: 12px;
   color: #f97316;
   font-weight: 600;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .header-left {
+    flex: 1;
+  }
+
+  .header-right {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  nav {
+    order: 2;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    gap: 2px;
+  }
+
+  nav button {
+    padding: 8px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  main {
+    padding: 16px;
+  }
+
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .prize-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .redemption-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .redemption-actions {
+    width: 100%;
+  }
+
+  .redemption-actions button {
+    flex: 1;
+  }
+
+  .login-card {
+    padding: 24px 20px;
+    margin: 16px;
+  }
+
+  .staff-list .staff-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .staff-actions {
+    width: 100%;
+  }
+
+  .staff-actions select {
+    width: 100%;
+  }
 }
