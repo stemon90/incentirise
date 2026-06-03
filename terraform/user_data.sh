@@ -19,6 +19,9 @@ cd /home/ec2-user
 git clone https://github.com/stemon90/incentirise.git
 cd incentirise
 
+# Fix ownership so ec2-user can git pull later
+chown -R ec2-user:ec2-user /home/ec2-user/incentirise
+
 # Fetch secrets from AWS Secrets Manager
 SECRET=$(aws secretsmanager get-secret-value \
   --secret-id incentirise/env \
@@ -26,17 +29,20 @@ SECRET=$(aws secretsmanager get-secret-value \
   --query SecretString \
   --output text)
 
-# Write .env file
+# Parse secrets
 DB_PASSWORD=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['DB_PASSWORD'])")
 VITE_API_URL=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['VITE_API_URL'])")
 JWT_SECRET=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['JWT_SECRET'])")
 RDS_ENDPOINT=$(echo $SECRET | python3 -c "import sys,json; print(json.load(sys.stdin)['RDS_ENDPOINT'])")
 
+# Write .env file
 cat > .env <<ENVEOF
 DB_PASSWORD=${DB_PASSWORD}
 VITE_API_URL=${VITE_API_URL}
 JWT_SECRET=${JWT_SECRET}
 RDS_ENDPOINT=${RDS_ENDPOINT}
+DATABASE_URL=postgresql://stevenuser:${DB_PASSWORD}@${RDS_ENDPOINT}:5432/incentirise?sslmode=require
+NODE_TLS_REJECT_UNAUTHORIZED=0
 ENVEOF
 
 # Start the app
