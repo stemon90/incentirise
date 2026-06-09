@@ -98,6 +98,12 @@ Good deeds can include academic tasks, participation, character moments, leaders
 - This prevents staff from forgetting to award points after approval
 - Every good deed in the system has at least one transaction attached — no orphaned records
 
+### Bulk Awarding
+
+- Staff can select multiple youth and award the same good deed to all of them at once
+- Useful for classroom participation, group activities, attendance — any scenario where the same good deed applies to many youth simultaneously
+- Each award is still individually logged per youth in the audit trail
+
 ### Flagging
 
 - The app **auto-warns** staff before submitting if a good deed contains obvious violations:
@@ -116,9 +122,65 @@ Cleaning tasks are allowed and encouraged as good deeds when voluntary. Youth ta
 
 This is addressed in onboarding, not enforced by the app.
 
-### Suggestions (Future)
+### Suggestions
 
-Advanced pattern-based suggestions per youth ("You usually award Maria for reading, it's been 3 days") are a future feature.
+- Award screen surfaces staff's most used good deeds first
+- Org-wide most used good deeds fill in below
+- Advanced pattern-based suggestions per youth ("You usually award Maria for reading") — future feature
+
+---
+
+## Default Good Deeds List
+
+Every new org is seeded with this list on registration. All good deeds use a sliding scale — staff picks the point value within the min/max range based on effort and context.
+
+### Attendance & Participation
+
+| Good Deed                           | Points    |
+| ----------------------------------- | --------- |
+| Signed in / Attended today          | 1 (fixed) |
+| Completed homework / Power Hour     | 3 – 10    |
+| Participated in an activity         | 3 – 10    |
+| Read independently                  | 3 – 8     |
+| Stayed engaged for the full session | 3 – 8     |
+| Tried something new                 | 3 – 8     |
+
+### Academic
+
+| Good Deed                      | Points |
+| ------------------------------ | ------ |
+| Asked for help when stuck      | 3 – 5  |
+| Helped a peer with homework    | 5 – 10 |
+| Improved on a previous attempt | 5 – 10 |
+
+### Character
+
+| Good Deed                             | Points |
+| ------------------------------------- | ------ |
+| Showed kindness to another member     | 3 – 10 |
+| Resolved a conflict peacefully        | 5 – 10 |
+| Took responsibility for a mistake     | 5 – 10 |
+| Encouraged someone who was struggling | 3 – 8  |
+| Welcomed a new member                 | 3 – 8  |
+
+### Leadership
+
+| Good Deed                        | Points |
+| -------------------------------- | ------ |
+| Helped staff without being asked | 5 – 10 |
+| Mentored a younger member        | 5 – 15 |
+| Led a group activity             | 5 – 15 |
+
+### Community & Citizenship
+
+| Good Deed                      | Points |
+| ------------------------------ | ------ |
+| Cleaned up without being asked | 3 – 8  |
+| Picked up trash                | 3 – 5  |
+| Held the door for someone      | 1 – 3  |
+
+**Point economy anchor:**
+A consistently engaged kid attending 5 days/week for a full school year (~180 days) earns approximately 1,000–2,000 points depending on effort level. The PS5 ceiling at 1,500 points represents roughly one full school year of dedicated positive participation.
 
 ---
 
@@ -145,71 +207,220 @@ Advanced pattern-based suggestions per youth ("You usually award Maria for readi
 - Points disappear from balance if Admin rejects
 - No artificial urgency in the UI — natural accountability only (staff knows a kid is waiting)
 
-### Point Values
-
-Point values for good deeds use a sliding scale — each good deed has a min and max range and staff picks where the effort deserves within that range.
-
-Default good deed point ranges and the default prize point economy are to be designed together in a dedicated session. The two systems must be balanced — the effort required to earn points should feel proportional to the prizes available.
-
 ---
 
 ## Prizes
 
 ### Prize Types
 
-- **Specific item** — a named physical item (water bottle, pencil, hoodie)
-- **Experience** — a planned event or activity (field trip, pizza party, movie night)
-- **Choice** — youth picks from a physical prize box or table; staff records the tier, not the item
+- **Catalogued prize** — a specific named item with an exact point value (PS5, water bottle, hoodie)
+- **Tier prize** — a bulk catch-all entry (Tier 1 Prize, Tier 2 Prize, Tier 3 Prize) used for donated or chaotic inventory where individual cataloging isn't practical
+- **Experience** — a planned event or activity (field trip, pizza party) — always catalogued specifically
+
+Catalogued specific prizes can be requested and reserved through the app. Tier prizes are interchangeable — nothing is reserved, no accidental giveaways.
 
 ### Prize Tiers
 
-- Default tiers: Tier 1 (5–25 pts), Tier 2 (25–75 pts), Tier 3 (75–200 pts)
-- Orgs can adjust ranges and costs freely — no hard limits
-- A visual spectrum (prize ladder) is used during prize setup so Admin can see where prizes fall relative to each other and assign values intuitively
-- The visual spectrum and default prize list (approx. 100 items) are to be designed in a dedicated session
+Tiers are organizational labels to help Admin place new prizes on the scale. They are not hard limits — orgs can set any point value they want.
+
+| Tier   | Point Range    | Examples                                  |
+| ------ | -------------- | ----------------------------------------- |
+| Tier 1 | 15 – 75 pts    | Pencil, snack, privilege, stickers        |
+| Tier 2 | 75 – 250 pts   | Sports ball, clothing, board game         |
+| Tier 3 | 250 – 600 pts  | Tech accessories, instruments, Lego large |
+| Tier 4 | 600 – 1500 pts | Console, mountain bike, tablet            |
+
+Big ticket prizes (Tier 4) are always catalogued specifically at their exact point value. They cannot be redeemed as a generic tier prize.
 
 ### Quantity
 
-- Quantity field is **optional** on prizes
+- Quantity field is **optional** on catalogued prizes
 - If set, app tracks remaining stock and closes the prize when it hits zero
 - If not set, prize stays open until Admin archives or closes it manually
 - Real-world inventory is the org's responsibility — the app tracks requests, not physical stock
 
 ### Redemption Flow
 
-Two redemption modes:
+**Pre-requested (catalogued prizes)**
 
-**Pre-requested**
-
-- Youth requests a redemption through the app anytime
+- Youth requests a specific prize through the app
 - Sits as pending in the Admin queue
-- Staff fulfills when ready (immediately if possible, or during Prize Store)
-- Staff marks as fulfilled
-- Points deducted on fulfillment
+- Staff fulfills when ready — immediately or during Prize Store
+- Staff marks as fulfilled, points deducted
 
-**On-the-spot (tier-based)**
+**On-the-spot (tier prizes)**
 
-- Staff pulls up youth profile during Prize Store or any time
-- Selects the tier of the item the youth chose physically
+- Staff pulls up youth profile
+- Selects the tier of the item the youth chose from a physical pile or box
 - Points deducted immediately
-- No prior request needed — works for bulk donated prizes and prize boxes
-
-Experiences and events are always pre-requested and specifically listed. Physical prizes can use either model depending on what the org can manage.
-
-**Note:** The catalog model vs. tier-based model decision is still under consideration. To be finalized in the prize list session.
+- No prior request needed — works for bulk donated inventory
 
 ### Prize Rules
 
-- Prizes should never include meals or basic sustenance — covered in onboarding guidelines and terms of service
+- Prizes should never include meals or basic sustenance — onboarding guidelines and terms of service
 - Snacks and treats are fine
 - The app cannot detect misuse of this rule — legal cover through terms of service
 
 ### Archive and Delete
 
-Same rules as good deeds:
-
 - Zero redemptions → delete allowed
 - Has redemptions → archive only, app enforces automatically
+
+---
+
+## Default Prize List
+
+Every new org is seeded with this list on registration. Orgs can add, edit, archive, or delete prizes freely.
+
+### Small / Instant (Tier 1 — 15–75 pts)
+
+| Prize                                 | Points |
+| ------------------------------------- | ------ |
+| Wooden pencil                         | 15     |
+| Eraser                                | 15     |
+| Stickers                              | 15     |
+| Glue                                  | 15     |
+| Snack of choice                       | 20     |
+| Tier 1 Prize (prize box item)         | 20     |
+| Can of soda                           | 20     |
+| Slime                                 | 25     |
+| Yo-yo                                 | 25     |
+| Hacky sack                            | 25     |
+| Jump rope (basic)                     | 25     |
+| Silly string                          | 25     |
+| Origami kit                           | 30     |
+| Lanyard                               | 30     |
+| Laptop sticker pack                   | 30     |
+| Graphite pencils                      | 30     |
+| Homework pass (one day)               | 30     |
+| Deck of cards                         | 35     |
+| Coloring book                         | 35     |
+| Origami paper pack                    | 35     |
+| Hula hoop                             | 35     |
+| New scissors                          | 35     |
+| Journal                               | 40     |
+| Comic book / Manga volume             | 40     |
+| Small toy (doll, action figure, etc.) | 40     |
+| Frisbee                               | 40     |
+| Fanny pack                            | 45     |
+| Sunglasses                            | 45     |
+| Baseball cap                          | 50     |
+
+### Privileges / Experiences (Tier 1–2 — 25–200 pts)
+
+| Prize                                                     | Points |
+| --------------------------------------------------------- | ------ |
+| Line leader for a week                                    | 25     |
+| First in line for a week                                  | 25     |
+| Sit anywhere day                                          | 25     |
+| Extra screen time (30 mins)                               | 30     |
+| Pick your seat for a week                                 | 30     |
+| Choice of class or group game                             | 35     |
+| Skip chore rotation (one time)                            | 35     |
+| Choose the playlist for the day                           | 35     |
+| Front desk helper for one hour                            | 40     |
+| Be the DJ for one hour                                    | 40     |
+| Extra recess or free play time                            | 40     |
+| Computer lab free time (30 mins)                          | 40     |
+| Name a club activity                                      | 45     |
+| Lead a group activity                                     | 45     |
+| Facility pass (game room, gym, soccer field, teen center) | 50     |
+| Open gym session                                          | 50     |
+| Choose the movie for movie day                            | 50     |
+| Get out of homework pass (one day)                        | 50     |
+| Be a junior staff helper for a day                        | 60     |
+| Pizza party (individual)                                  | 100    |
+| Lunch with the director                                   | 110    |
+| Early dismissal pass                                      | 175    |
+| Field trip                                                | 200    |
+
+### Art & School Supplies (Tier 1–2 — 50–200 pts)
+
+| Prize                       | Points |
+| --------------------------- | ------ |
+| New markers                 | 50     |
+| Colored pencils             | 50     |
+| Maracas                     | 50     |
+| Puzzle (100–500 pieces)     | 50     |
+| Kite                        | 50     |
+| Sketchbook                  | 60     |
+| Novel of choice             | 60     |
+| Paint set                   | 75     |
+| Clay kit                    | 75     |
+| Craft supply kit (assorted) | 75     |
+| Watercolor set              | 75     |
+| Calligraphy set             | 100    |
+| Board game                  | 125    |
+| Lego set (small)            | 125    |
+| D&D starter kit             | 150    |
+| Ukulele                     | 200    |
+
+### Clothing & Accessories (Tier 2 — 60–250 pts)
+
+| Prize                              | Points |
+| ---------------------------------- | ------ |
+| Water bottle                       | 60     |
+| Club apparel (shirt, shorts, etc.) | 75     |
+| Drawstring backpack                | 75     |
+| Hoodie                             | 150    |
+| Nice backpack                      | 200    |
+| New shoes                          | 250    |
+
+### Toys & Games (Tier 1–3 — 60–300 pts)
+
+| Prize                           | Points |
+| ------------------------------- | ------ |
+| Mini chess board                | 60     |
+| Deck of Pokemon cards           | 75     |
+| Model kit (car, airplane, etc.) | 75     |
+| Jump rope (speed/nice)          | 75     |
+| Nice chess board                | 150    |
+| Remote control car              | 200    |
+| Lego set (large)                | 300    |
+
+### Sports & Outdoors (Tier 2–4 — 75–1000 pts)
+
+| Prize                 | Points |
+| --------------------- | ------ |
+| Badminton set         | 75     |
+| Resistance bands set  | 75     |
+| Sports ball of choice | 125    |
+| Skateboard            | 250    |
+| Mountain bike         | 1000   |
+
+### Tech (Tier 2–3 — 75–600 pts)
+
+| Prize                                                   | Points |
+| ------------------------------------------------------- | ------ |
+| Tech accessory (USB drive, adapter, charger, mouse pad) | 75     |
+| Bluetooth receiver                                      | 100    |
+| Gaming mouse                                            | 150    |
+| Bluetooth speaker                                       | 250    |
+| First Act guitar                                        | 250    |
+| Arduino starter kit                                     | 350    |
+| Xbox controller                                         | 350    |
+| Electronic drum pad                                     | 350    |
+| PS5 controller                                          | 400    |
+| Raspberry Pi kit                                        | 400    |
+| Airpods / earbuds                                       | 500    |
+| Record player                                           | 500    |
+| Electric guitar (full size)                             | 600    |
+
+### Big Ticket (Tier 4 — 100–1500 pts)
+
+| Prize                | Points |
+| -------------------- | ------ |
+| Gift card ($10)      | 100    |
+| Gift card ($25)      | 225    |
+| Gift card ($50)      | 400    |
+| Tier 2 Prize         | 75     |
+| Tier 3 Prize         | 250    |
+| Tier 4 Prize         | 700    |
+| Nintendo Switch game | 300    |
+| Tablet               | 700    |
+| Nintendo Switch      | 800    |
+| PS5                  | 1500   |
+| Xbox Series X        | 1500   |
 
 ---
 
@@ -290,11 +501,11 @@ Every new org registration:
 
 - Agrees to community guidelines and terms of service
 - Receives education on the platform philosophy (earned dopamine, positive reinforcement, growth-oriented good deeds)
-- Walks through point economy setup — guidance on balancing good deed values and prize costs
-- Receives a default good deeds list (to be finalized in a dedicated session)
-- Receives suggested prize tiers and visual spectrum tool for prize setup
+- Receives the default good deeds list pre-seeded
+- Receives the default prize list pre-seeded
 - Admin sets custom point name
 - Admin sets prize tier limits for youth of the month credit
+- Onboarding walks orgs through point economy so they understand how effort maps to prizes
 
 ---
 
@@ -309,11 +520,7 @@ Every new org registration:
 
 ## What's Still Open
 
-- [ ] Default good deeds list — approx. 100 items with tags and point ranges
-- [ ] Default prize list — approx. 100 items mapped to the visual spectrum
-- [ ] Point economy design — good deed values and prize costs designed together as a balanced system
-- [ ] Visual prize spectrum — design and interaction model
-- [ ] Catalog model vs. tier-based redemption — final decision pending
+- [ ] Visual prize spectrum — design and interaction model for prize setup UI
 - [ ] Smart suggestions (advanced, per-youth patterns) — future feature
 - [ ] Deprecation prompts for unused good deeds — future feature
 - [ ] Prize expiration / time-limited prizes — not yet addressed
