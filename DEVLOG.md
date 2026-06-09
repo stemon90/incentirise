@@ -447,6 +447,119 @@ Phase 11 complete — incentirise.com live on HTTPS, data persisting in RDS, ngi
 - user_data.sh needs updating so new ASG instances connect to RDS with SSL and start correctly
 - NODE_TLS_REJECT_UNAUTHORIZED=0 disables cert verification — acceptable for now, should be replaced with proper RDS CA cert verification later
 
+### Hardening & Product Planning — Day 24
+
+**Infrastructure hardening:**
+
+- Enabled RDS automated backups — 7-day retention, 3am UTC backup window
+- Codified all Phase 11 AWS infrastructure in Terraform — ACM cert, HTTPS listener, frontend target group, Route 53 record
+- Imported all Phase 11 resources into Terraform state — terraform plan shows no changes
+- Updated user_data.sh — new ASG instances now boot with RDS SSL and correct file ownership
+- Locked CORS to incentirise.com in production via NODE_ENV check
+- Added NODE_ENV=production to docker-compose.yml backend environment
+- Fixed GitHub Actions secrets — EC2_HOST, EC2_USER, EC2_SSH_KEY were empty
+- Fixed deploy script — changed docker compose to docker-compose for EC2 compatibility
+- CI/CD pipeline fully operational — push to main deploys automatically
+
+**Product features shipped:**
+
+- Added Staff management tab — Admin only, visible in dashboard nav
+- Admin can create new staff accounts with name, email, password, and role
+- Admin can change staff roles from the Staff tab
+- Locked POST /staff route — Admin JWT required
+- Added mobile responsive CSS — app works on phones
+- Added landscape and tablet CSS — app works in all orientations
+- Added public org registration — new clubs can self-serve sign up at incentirise.com
+- Login page now has "Get Started" link to registration
+- Registration creates org and first Admin account in one step
+- Confirmed org isolation works — separate orgs cannot see each other's data
+
+**Product planning — key decisions:**
+
+- IncentiRise targets individual clubs (BGC Santa Fe, BGCMD chapters, YMCAs, schools) as separate paying customers — not the umbrella org as one unified system
+- Parent orgs (BGCMD) get read-only dashboard access to see cross-club data without controlling clubs
+- Business model: tiered SaaS — Starter ($150/mo), Professional ($300/mo), Enterprise ($500+/mo)
+- Killer feature is grant reporting — turning incentive activity into measurable impact data
+- Elevator pitch: "IncentiRise turns your incentive program into measurable data that helps you win grants"
+- Future products: IncentiRise for Families (freemium), IncentiRise for Classrooms, track/milestone app, attendance tracker
+- Confirmed: new org registration creates blank slate — default behaviors and prizes must be seeded automatically on signup
+
+**Front desk workflow identified:**
+
+- USB barcode scanner ($30-50) plugs into desktop, scans youth QR codes
+- App needs always-active scan field on Award Points page
+- Printable QR sheets needed — multiple youth per page, admin generates from app
+
+**Full product roadmap established — see roadmap section below**
+
+---
+
+## Product Roadmap
+
+### INFRASTRUCTURE & OPERATIONS
+
+- [ ] Replace NODE_TLS_REJECT_UNAUTHORIZED=0 with proper RDS CA cert
+
+### MOBILE & UX
+
+- [x] Mobile responsive CSS
+- [x] Landscape/tablet CSS
+- [ ] Touch-optimized QR scanning flow — mobile camera scan
+- [ ] Youth-facing mobile view — simplified view for kids
+
+### AUTH & ACCOUNTS
+
+- [x] Staff login
+- [x] Org registration
+- [x] Staff management by Admin
+- [ ] Forgot password flow — email reset link
+- [ ] Home version vs Program version — optional location/site field on youth account
+
+### CORE PRODUCT RULES
+
+- [ ] Points-only-positive enforcement — UI never allows point removal as punishment
+- [ ] Behavior guardrails — growth-oriented behaviors, app guides this
+- [ ] No food/drink as prize — onboarding guidance
+- [ ] No threat-based goals — onboarding education
+
+### PRIZE & BEHAVIOR FRAMEWORK
+
+- [ ] Default global behavior list — seeded for every new org
+- [ ] Prize tier framework — Tier 1 (5-25pts), Tier 2 (25-75pts), Tier 3 (75-200pts)
+- [ ] Prize setup guidance during onboarding — templates and examples
+- [ ] Customize point name per org (club bucks, stars, coins) — field exists, needs UI
+
+### QR & FRONT DESK WORKFLOW
+
+- [ ] Printable QR sheets — multiple youth per page, admin prints from app
+- [ ] Desktop scan-to-award flow — always-active field listening for USB barcode scanner
+- [ ] USB barcode scanner compatible — standard $30-50 USB scanners work
+
+### FEATURES
+
+- [ ] Group challenges — create groups, pool points toward shared prize
+- [ ] Event-based redemptions — time-boxed events like Christmas gift drive, draft-style prize selection, leaderboard
+- [ ] Star student recognition — student of week/month on dashboard
+- [ ] Stats and reporting — per youth, per org, grant-ready reports
+- [ ] Analytics dashboard — attendance trends, top behaviors, redemption rates
+- [ ] Read-only parent org dashboard — cross-club reporting for umbrella orgs
+
+### BUSINESS
+
+- [ ] Pricing tiers — Starter ($150), Professional ($300), Enterprise ($500+)
+- [ ] Stripe integration — credit card payments, recurring subscriptions
+- [ ] Subscription management — billing portal, invoices, cancellation
+- [ ] Onboarding flow — welcome email, setup checklist, first-time guidance
+- [ ] Auto-seed behaviors and prizes on new org registration
+- [ ] Vendor partnerships — discounted prize marketplace, commission model
+
+### FUTURE PRODUCTS
+
+- [ ] IncentiRise for Families — lightweight household version, freemium
+- [ ] IncentiRise for Classrooms — teacher edition with grade-level defaults
+- [ ] Track/milestone app — learning paths for Tech Club youth
+- [ ] Lightweight attendance tracker with grant reporting
+
 ---
 
 ## Key Decisions
