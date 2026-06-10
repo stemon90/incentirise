@@ -1,13 +1,15 @@
 export async function seedDefaultData(prisma, organizationId) {
   const behaviors = [
-    // Attendance & Participation
+    // Attendance
     {
-      name: "Signed in / Attended today",
+      name: "Signed in today",
       description: "Youth showed up and signed in",
       minPoints: 1,
       maxPoints: 1,
       isDefault: true,
     },
+
+    // Academic
     {
       name: "Completed homework / Power Hour",
       description:
@@ -17,17 +19,47 @@ export async function seedDefaultData(prisma, organizationId) {
       isDefault: true,
     },
     {
-      name: "Participated in an activity",
-      description: "Youth actively engaged in a program activity",
+      name: "Turned in a completed assignment",
+      description: "Youth submitted a finished assignment",
       minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Asked for help",
+      description: "Youth demonstrated self-advocacy by asking for assistance",
+      minPoints: 3,
+      maxPoints: 5,
+      isDefault: true,
+    },
+    {
+      name: "Helped a peer with homework",
+      description: "Youth supported another member with their schoolwork",
+      minPoints: 5,
       maxPoints: 10,
       isDefault: true,
     },
     {
-      name: "Read independently",
-      description: "Youth read on their own during free or structured time",
+      name: "Read independently during reading time",
+      description: "Youth read on their own during structured reading time",
       minPoints: 3,
       maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Finished a book",
+      description: "Youth completed reading an entire book",
+      minPoints: 5,
+      maxPoints: 15,
+      isDefault: true,
+    },
+
+    // Participation
+    {
+      name: "Participated in an activity",
+      description: "Youth actively engaged in a program activity",
+      minPoints: 3,
+      maxPoints: 10,
       isDefault: true,
     },
     {
@@ -45,36 +77,90 @@ export async function seedDefaultData(prisma, organizationId) {
       maxPoints: 8,
       isDefault: true,
     },
-
-    // Academic
     {
-      name: "Asked for help when stuck",
-      description: "Youth demonstrated self-advocacy by asking for assistance",
+      name: "Raised their hand to contribute",
+      description:
+        "Youth volunteered to answer a question or share with the group",
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
     },
     {
-      name: "Helped a peer with homework",
-      description: "Youth supported another member with their schoolwork",
+      name: "Shared an idea with the group",
+      description:
+        "Youth contributed a thought or suggestion to a group discussion",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+
+    // Helping Others
+    {
+      name: "Helped a staff member",
+      description: "Youth voluntarily assisted a staff member",
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
     },
     {
-      name: "Improved on a previous attempt",
-      description: "Youth showed growth by doing better than before",
-      minPoints: 5,
+      name: "Helped a peer",
+      description: "Youth supported another member in any way",
+      minPoints: 3,
       maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Helped set up or clean up for an event",
+      description: "Youth assisted with event preparation or cleanup",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Helped with snack, lunch, or dinner",
+      description: "Youth assisted with food preparation or distribution",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Shared supplies with someone",
+      description:
+        "Youth shared their materials with another member who needed them",
+      minPoints: 3,
+      maxPoints: 5,
       isDefault: true,
     },
 
     // Character
     {
-      name: "Showed kindness to another member",
-      description: "Youth demonstrated care and consideration for someone else",
+      name: "Welcomed a new member",
+      description: "Youth made a new person feel included and comfortable",
       minPoints: 3,
-      maxPoints: 10,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Complimented someone sincerely",
+      description:
+        "Youth offered a genuine compliment to a peer or staff member",
+      minPoints: 3,
+      maxPoints: 5,
+      isDefault: true,
+    },
+    {
+      name: "Apologized sincerely",
+      description: "Youth offered a genuine apology for something they did",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Walked away from an argument",
+      description:
+        "Youth chose to remove themselves from a conflict rather than escalate",
+      minPoints: 3,
+      maxPoints: 8,
       isDefault: true,
     },
     {
@@ -91,29 +177,8 @@ export async function seedDefaultData(prisma, organizationId) {
       maxPoints: 10,
       isDefault: true,
     },
-    {
-      name: "Encouraged someone who was struggling",
-      description: "Youth lifted up a peer who needed support",
-      minPoints: 3,
-      maxPoints: 8,
-      isDefault: true,
-    },
-    {
-      name: "Welcomed a new member",
-      description: "Youth made a new person feel included and comfortable",
-      minPoints: 3,
-      maxPoints: 8,
-      isDefault: true,
-    },
 
     // Leadership
-    {
-      name: "Helped staff without being asked",
-      description: "Youth voluntarily assisted a staff member",
-      minPoints: 5,
-      maxPoints: 10,
-      isDefault: true,
-    },
     {
       name: "Mentored a younger member",
       description: "Youth guided or supported a younger peer",
@@ -128,27 +193,212 @@ export async function seedDefaultData(prisma, organizationId) {
       maxPoints: 15,
       isDefault: true,
     },
-
-    // Community & Citizenship
     {
-      name: "Cleaned up without being asked",
-      description: "Youth voluntarily tidied up their space or the facility",
-      minPoints: 3,
-      maxPoints: 8,
+      name: "Kept the group focused and on task",
+      description:
+        "Youth helped maintain focus during a group activity or session",
+      minPoints: 5,
+      maxPoints: 10,
       isDefault: true,
     },
     {
+      name: "Read to a younger member",
+      description: "Youth read aloud to a younger peer",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+
+    // Cleaning & Facility Care
+    {
       name: "Picked up trash",
-      description: "Youth helped keep the space clean by picking up litter",
+      description: "Youth picked up litter inside or outside the facility",
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
     },
     {
+      name: "Swept a room",
+      description: "Youth swept a common area or program room",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Wiped down tables",
+      description: "Youth cleaned tables in a common area or program room",
+      minPoints: 3,
+      maxPoints: 5,
+      isDefault: true,
+    },
+    {
+      name: "Vacuumed the carpet",
+      description: "Youth vacuumed a carpeted area",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Cleaned windows",
+      description: "Youth cleaned windows or glass surfaces",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Cleaned walls",
+      description: "Youth wiped down or cleaned walls",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Picked up after themselves",
+      description: "Youth cleaned up their own mess without being asked",
+      minPoints: 3,
+      maxPoints: 5,
+      isDefault: true,
+    },
+
+    // Community & Citizenship
+    {
       name: "Held the door for someone",
-      description: "Youth showed courtesy and consideration",
+      description: "Youth showed courtesy by holding the door open",
       minPoints: 1,
       maxPoints: 3,
+      isDefault: true,
+    },
+    {
+      name: "Said please and thank you unprompted",
+      description: "Youth demonstrated courtesy without being reminded",
+      minPoints: 1,
+      maxPoints: 3,
+      isDefault: true,
+    },
+    {
+      name: "Behaved on the bus",
+      description: "Youth demonstrated good behavior during bus transportation",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Behaved on a field trip",
+      description:
+        "Youth represented the club positively during an off-site activity",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Represented the club positively",
+      description:
+        "Youth acted as a positive ambassador for the club in the community",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+
+    // Athletics & Physical Activity
+    {
+      name: "Participated in physical activity",
+      description: "Youth engaged in a physical activity or sport",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Showed good sportsmanship",
+      description:
+        "Youth demonstrated fair play and respect during a game or activity",
+      minPoints: 3,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Encouraged a teammate",
+      description: "Youth cheered on or motivated a fellow participant",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+
+    // Arts & Creativity
+    {
+      name: "Completed an art project",
+      description: "Youth finished a creative art project",
+      minPoints: 3,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Shared their creative work with the group",
+      description: "Youth presented or displayed their creative work to others",
+      minPoints: 3,
+      maxPoints: 8,
+      isDefault: true,
+    },
+    {
+      name: "Presented a project to the group",
+      description: "Youth formally presented their work to staff or peers",
+      minPoints: 5,
+      maxPoints: 15,
+      isDefault: true,
+    },
+
+    // Tech & STEM
+    {
+      name: "Completed a coding or STEM challenge",
+      description: "Youth finished a coding exercise or STEM activity",
+      minPoints: 5,
+      maxPoints: 15,
+      isDefault: true,
+    },
+    {
+      name: "Helped a peer troubleshoot",
+      description:
+        "Youth assisted another member in solving a technical problem",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Learned a new tech skill",
+      description:
+        "Youth acquired a new technical skill during a program session",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Demonstrated a project to the group",
+      description: "Youth showed their tech or STEM project to staff or peers",
+      minPoints: 5,
+      maxPoints: 15,
+      isDefault: true,
+    },
+
+    // Personal Growth
+    {
+      name: "Kept trying after failing",
+      description:
+        "Youth persisted through difficulty and kept making an effort",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Improved on a previous attempt",
+      description: "Youth showed growth by doing better than before",
+      minPoints: 5,
+      maxPoints: 10,
+      isDefault: true,
+    },
+    {
+      name: "Got an A on a test or assignment",
+      description: "Youth achieved an A grade on a school test or assignment",
+      minPoints: 5,
+      maxPoints: 15,
       isDefault: true,
     },
   ];
