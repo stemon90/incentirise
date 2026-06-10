@@ -1,6 +1,7 @@
 import express from "express";
 import { prisma } from "../index.js";
 import { authenticate, requireAdmin } from "../middleware/auth.js";
+import { seedDefaultData } from "../seed/defaultSeed.js";
 
 const router = express.Router();
 
@@ -58,6 +59,8 @@ router.post("/register", async (req, res) => {
         },
       },
     });
+
+    await seedDefaultData(prisma, org.id);
 
     res.status(201).json({
       message: "Organization created successfully",
