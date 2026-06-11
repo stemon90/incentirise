@@ -18,7 +18,7 @@ router.post("/", authenticate, requireAdmin, async (req, res) => {
         name,
         description: description || null,
         pointCost: parseInt(pointCost),
-        quantity: quantity ? parseInt(quantity) : 1,
+        quantity: quantity ? parseInt(quantity) : 999,
         requiresAdmin: requiresAdmin || false,
         organizationId: req.staff.organizationId,
       },
