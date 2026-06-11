@@ -21,7 +21,6 @@ function Youth({ staff }) {
     firstName: "",
     lastName: "",
     dob: "",
-    grade: "",
   });
 
   useEffect(() => {
@@ -122,14 +121,6 @@ function Youth({ staff }) {
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Grade</label>
-              <input
-                value={form.grade}
-                onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                placeholder="e.g. 6"
-              />
-            </div>
           </div>
           <button type="submit" className="btn-primary">
             Add Youth
@@ -159,7 +150,6 @@ function Youth({ staff }) {
               {selected.firstName} {selected.lastName}
             </h3>
             <p className="points-display">{selected.points} points</p>
-            {selected.grade && <p>Grade: {selected.grade}</p>}
 
             {qrImage && (
               <div className="qr-container">

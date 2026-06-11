@@ -96,12 +96,12 @@ function Prizes({ staff }) {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Quantity</label>
+              <label>Quantity (optional)</label>
               <input
                 type="number"
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-                required
+                placeholder="Leave blank for unlimited"
               />
             </div>
             <div className="form-group">
