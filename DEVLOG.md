@@ -492,6 +492,51 @@ Phase 11 complete — incentirise.com live on HTTPS, data persisting in RDS, ngi
 
 **Full product roadmap established — see roadmap section below**
 
+### Product Design & Feature Build — Day 25
+
+**Product design sessions:**
+
+Completed two full product design sessions covering the entire Good Deeds, Points, and Prize framework. All decisions documented in PRODUCT.md.
+
+Key decisions made:
+
+- Renamed Behaviors → Good Deeds throughout the product (code rename deferred)
+- Good deeds must be directly observable by staff — no subjective or self-reported actions
+- Good deeds organized into 12 categories with tags for filtering
+- Archive vs delete rule: zero transactions → delete allowed, has transactions → archive only, app enforces automatically
+- New good deed submissions are atomic with point awards — approve the deed, points land; reject, nothing happens
+- Pending points show on youth balance while awaiting Admin approval
+- Point correction flow: formal request with reason, Admin approval, permanent audit trail (bank reversal model)
+- Bulk awarding: staff can award same good deed to multiple youth at once
+- Prize tiers are organizational labels only, not hard limits — orgs set any point value they want
+- Two redemption modes: pre-requested (catalogued prizes) and on-the-spot (tier prizes for bulk donated inventory)
+- Tier prizes solve the donated inventory problem — staff redeems a tier, not a specific item, no reservation conflicts
+- Group challenges: max 3 active, donated points returned if challenge fails, staff-designated group points disappear
+- Youth of the month: staff nominated, free prize credit (not points), Admin sets tier limit
+- Point economy anchors: attendance 1pt fixed, homework/participation 3–10pt sliding scale, PS5 at 1,500pt ceiling, wooden pencil at 15pt floor
+- Default good deeds list finalized at 52 items across 12 categories
+- Default prize list finalized at 110 items across 8 categories
+
+**Features shipped:**
+
+- Auto-seed on org registration — 52 good deeds and 110 prizes created automatically for every new org
+- Expanded default good deeds from 20 to 52 with full category coverage
+- Added .env.development and .env.production to frontend — Vite automatically uses correct API URL per environment, no more manual switching
+- Fixed tab title from "front" to "IncentiRise"
+- Fixed missing space in Register button className
+
+**Infrastructure:**
+
+- CI/CD pipeline fully operational throughout
+- All changes shipped via feature branches and PRs
+
+**Next session priorities:**
+
+1. Add category/tag field to Behavior model
+2. Add category field to Prize model
+3. Update seed to include categories for all 52 good deeds and 110 prizes
+4. Update UI to filter by category on award screen and prize catalog
+
 ---
 
 ## Product Roadmap
