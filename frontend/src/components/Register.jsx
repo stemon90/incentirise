@@ -64,7 +64,9 @@ function Register({ onBackToLogin }) {
               <label>First Name</label>
               <input
                 value={form.firstName}
-                onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, firstName: e.target.value })
+                }
                 required
               />
             </div>
@@ -100,7 +102,14 @@ function Register({ onBackToLogin }) {
           </button>
         </form>
 
-        <p style={{ textAlign: "center", marginTop: "16px", fontSize: "14px", color: "#666" }}>
+        <p
+          style={{
+            textAlign: "center",
+            marginTop: "16px",
+            fontSize: "14px",
+            color: "#666",
+          }}
+        >
           Already have an account?{" "}
           <span
             onClick={onBackToLogin}
