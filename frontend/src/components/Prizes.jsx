@@ -6,12 +6,14 @@ function Prizes({ staff }) {
   const [showAdd, setShowAdd] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [form, setForm] = useState({
     name: "",
     description: "",
     pointCost: "",
     quantity: "",
     requiresAdmin: false,
+    category: "",
   });
 
   useEffect(() => {
@@ -37,6 +39,7 @@ function Prizes({ staff }) {
         pointCost: "",
         quantity: "",
         requiresAdmin: false,
+        category: "",
       });
       setShowAdd(false);
       setSuccess("Prize added successfully");
@@ -55,6 +58,16 @@ function Prizes({ staff }) {
       setError("Failed to delete prize");
     }
   };
+
+  const categories = [
+    "All",
+    ...new Set(prizes.map((p) => p.category).filter(Boolean)),
+  ];
+
+  const filteredPrizes =
+    selectedCategory === "All"
+      ? prizes
+      : prizes.filter((p) => p.category === selectedCategory);
 
   return (
     <div className="page">
@@ -96,6 +109,14 @@ function Prizes({ staff }) {
           </div>
           <div className="form-row">
             <div className="form-group">
+              <label>Category</label>
+              <input
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+                placeholder="e.g. Tech, Sports & Outdoors"
+              />
+            </div>
+            <div className="form-group">
               <label>Quantity (optional)</label>
               <input
                 type="number"
@@ -104,15 +125,15 @@ function Prizes({ staff }) {
                 placeholder="Leave blank for unlimited"
               />
             </div>
-            <div className="form-group">
-              <label>Description</label>
-              <input
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-              />
-            </div>
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <input
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+            />
           </div>
           <div className="form-group checkbox-group">
             <label>
@@ -132,32 +153,48 @@ function Prizes({ staff }) {
         </form>
       )}
 
-      <div className="prize-grid">
-        {prizes.map((prize) => (
-          <div key={prize.id} className="prize-card card">
-            <div className="prize-header">
-              <h3>{prize.name}</h3>
-              {prize.requiresAdmin && (
-                <span className="badge admin-badge">Admin Approval</span>
-              )}
-            </div>
-            {prize.description && (
-              <p className="prize-desc">{prize.description}</p>
-            )}
-            <div className="prize-footer">
-              <span className="prize-cost">{prize.pointCost} pts</span>
-              <span className="prize-qty">Qty: {prize.quantity}</span>
-              {staff.role === "ADMIN" && (
-                <button
-                  className="btn-danger-sm"
-                  onClick={() => handleDelete(prize.id)}
-                >
-                  Delete
-                </button>
-              )}
-            </div>
-          </div>
+      <div className="category-filter">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
+            onClick={() => setSelectedCategory(cat)}
+          >
+            {cat}
+          </button>
         ))}
+      </div>
+
+      <div className="prize-grid">
+        {filteredPrizes.length === 0 ? (
+          <p className="empty">No prizes in this category</p>
+        ) : (
+          filteredPrizes.map((prize) => (
+            <div key={prize.id} className="prize-card card">
+              <div className="prize-header">
+                <h3>{prize.name}</h3>
+                {prize.requiresAdmin && (
+                  <span className="badge admin-badge">Admin Approval</span>
+                )}
+              </div>
+              {prize.description && (
+                <p className="prize-desc">{prize.description}</p>
+              )}
+              <div className="prize-footer">
+                <span className="prize-cost">{prize.pointCost} pts</span>
+                <span className="prize-qty">Qty: {prize.quantity}</span>
+                {staff.role === "ADMIN" && (
+                  <button
+                    className="btn-danger-sm"
+                    onClick={() => handleDelete(prize.id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

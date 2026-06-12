@@ -89,6 +89,7 @@ model Prize {
   pointCost      Int
   quantity       Int      @default(1)
   requiresAdmin  Boolean  @default(false)
+  category       String?
   organizationId Int
   createdAt      DateTime @default(now())
 

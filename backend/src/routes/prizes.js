@@ -1,17 +1,15 @@
 import express from "express";
 import { prisma } from "../index.js";
 import { authenticate, requireAdmin } from "../middleware/auth.js";
-
 const router = express.Router();
 
 // Create prize (Admin only)
 router.post("/", authenticate, requireAdmin, async (req, res) => {
-  const { name, description, pointCost, quantity, requiresAdmin } = req.body;
-
+  const { name, description, pointCost, quantity, requiresAdmin, category } =
+    req.body;
   if (!name || pointCost === undefined) {
     return res.status(400).json({ error: "Name and pointCost are required" });
   }
-
   try {
     const prize = await prisma.prize.create({
       data: {
@@ -20,6 +18,7 @@ router.post("/", authenticate, requireAdmin, async (req, res) => {
         pointCost: parseInt(pointCost),
         quantity: quantity ? parseInt(quantity) : 999,
         requiresAdmin: requiresAdmin || false,
+        category: category || null,
         organizationId: req.staff.organizationId,
       },
     });
@@ -35,7 +34,7 @@ router.get("/", authenticate, async (req, res) => {
   try {
     const prizes = await prisma.prize.findMany({
       where: { organizationId: req.staff.organizationId },
-      orderBy: { pointCost: "asc" },
+      orderBy: [{ category: "asc" }, { pointCost: "asc" }],
     });
     res.json(prizes);
   } catch (err) {
@@ -46,7 +45,6 @@ router.get("/", authenticate, async (req, res) => {
 // Get prize by ID
 router.get("/:id", authenticate, async (req, res) => {
   const id = parseInt(req.params.id);
-
   try {
     const prize = await prisma.prize.findUnique({ where: { id } });
     if (!prize) return res.status(404).json({ error: "Prize not found" });
@@ -59,8 +57,8 @@ router.get("/:id", authenticate, async (req, res) => {
 // Update prize (Admin only)
 router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
-  const { name, description, pointCost, quantity, requiresAdmin } = req.body;
-
+  const { name, description, pointCost, quantity, requiresAdmin, category } =
+    req.body;
   try {
     const prize = await prisma.prize.update({
       where: { id },
@@ -70,6 +68,7 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
         ...(pointCost !== undefined && { pointCost: parseInt(pointCost) }),
         ...(quantity !== undefined && { quantity: parseInt(quantity) }),
         ...(requiresAdmin !== undefined && { requiresAdmin }),
+        ...(category !== undefined && { category }),
       },
     });
     res.json(prize);
@@ -81,7 +80,6 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
 // Delete prize (Admin only)
 router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
-
   try {
     await prisma.prize.delete({ where: { id } });
     res.json({ message: "Prize deleted" });
