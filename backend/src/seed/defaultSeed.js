@@ -7,6 +7,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 1,
       maxPoints: 1,
       isDefault: true,
+      category: "Attendance",
     },
 
     // Academic
@@ -17,6 +18,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 10,
       isDefault: true,
+      category: "Academic",
     },
     {
       name: "Turned in a completed assignment",
@@ -24,6 +26,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Academic",
     },
     {
       name: "Asked for help",
@@ -31,6 +34,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Academic",
     },
     {
       name: "Helped a peer with homework",
@@ -38,6 +42,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Academic",
     },
     {
       name: "Read independently during reading time",
@@ -45,6 +50,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Academic",
     },
     {
       name: "Finished a book",
@@ -52,6 +58,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Academic",
     },
 
     // Participation
@@ -61,6 +68,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 10,
       isDefault: true,
+      category: "Participation",
     },
     {
       name: "Stayed engaged for the full session",
@@ -68,6 +76,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Participation",
     },
     {
       name: "Tried something new",
@@ -76,6 +85,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Participation",
     },
     {
       name: "Raised their hand to contribute",
@@ -84,6 +94,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Participation",
     },
     {
       name: "Shared an idea with the group",
@@ -92,6 +103,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Participation",
     },
 
     // Helping Others
@@ -101,6 +113,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Helping Others",
     },
     {
       name: "Helped a peer",
@@ -108,6 +121,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 10,
       isDefault: true,
+      category: "Helping Others",
     },
     {
       name: "Helped set up or clean up for an event",
@@ -115,6 +129,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Helping Others",
     },
     {
       name: "Helped with snack, lunch, or dinner",
@@ -122,6 +137,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Helping Others",
     },
     {
       name: "Shared supplies with someone",
@@ -130,6 +146,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Helping Others",
     },
 
     // Character
@@ -139,6 +156,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Character",
     },
     {
       name: "Complimented someone sincerely",
@@ -147,6 +165,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Character",
     },
     {
       name: "Apologized sincerely",
@@ -154,6 +173,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Character",
     },
     {
       name: "Walked away from an argument",
@@ -162,6 +182,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Character",
     },
     {
       name: "Resolved a conflict peacefully",
@@ -169,6 +190,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Character",
     },
     {
       name: "Took responsibility for a mistake",
@@ -176,6 +198,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Character",
     },
 
     // Leadership
@@ -185,6 +208,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Leadership",
     },
     {
       name: "Led a group activity",
@@ -192,6 +216,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Leadership",
     },
     {
       name: "Kept the group focused and on task",
@@ -200,6 +225,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Leadership",
     },
     {
       name: "Read to a younger member",
@@ -207,6 +233,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Leadership",
     },
 
     // Cleaning & Facility Care
@@ -216,6 +243,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Swept a room",
@@ -223,6 +251,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Wiped down tables",
@@ -230,6 +259,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Vacuumed the carpet",
@@ -237,6 +267,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Cleaned windows",
@@ -244,6 +275,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Cleaned walls",
@@ -251,6 +283,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
     {
       name: "Picked up after themselves",
@@ -258,6 +291,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 5,
       isDefault: true,
+      category: "Cleaning & Facility Care",
     },
 
     // Community & Citizenship
@@ -267,6 +301,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 1,
       maxPoints: 3,
       isDefault: true,
+      category: "Community & Citizenship",
     },
     {
       name: "Said please and thank you unprompted",
@@ -274,6 +309,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 1,
       maxPoints: 3,
       isDefault: true,
+      category: "Community & Citizenship",
     },
     {
       name: "Behaved on the bus",
@@ -281,6 +317,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Community & Citizenship",
     },
     {
       name: "Behaved on a field trip",
@@ -289,6 +326,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Community & Citizenship",
     },
     {
       name: "Represented the club positively",
@@ -297,6 +335,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Community & Citizenship",
     },
 
     // Athletics & Physical Activity
@@ -306,6 +345,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Athletics & Physical Activity",
     },
     {
       name: "Showed good sportsmanship",
@@ -314,6 +354,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 10,
       isDefault: true,
+      category: "Athletics & Physical Activity",
     },
     {
       name: "Encouraged a teammate",
@@ -321,6 +362,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Athletics & Physical Activity",
     },
 
     // Arts & Creativity
@@ -330,6 +372,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 10,
       isDefault: true,
+      category: "Arts & Creativity",
     },
     {
       name: "Shared their creative work with the group",
@@ -337,6 +380,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 3,
       maxPoints: 8,
       isDefault: true,
+      category: "Arts & Creativity",
     },
     {
       name: "Presented a project to the group",
@@ -344,6 +388,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Arts & Creativity",
     },
 
     // Tech & STEM
@@ -353,6 +398,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Tech & STEM",
     },
     {
       name: "Helped a peer troubleshoot",
@@ -361,6 +407,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Tech & STEM",
     },
     {
       name: "Learned a new tech skill",
@@ -369,6 +416,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Tech & STEM",
     },
     {
       name: "Demonstrated a project to the group",
@@ -376,6 +424,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Tech & STEM",
     },
 
     // Personal Growth
@@ -386,6 +435,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Personal Growth",
     },
     {
       name: "Improved on a previous attempt",
@@ -393,6 +443,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 10,
       isDefault: true,
+      category: "Personal Growth",
     },
     {
       name: "Got an A on a test or assignment",
@@ -400,6 +451,7 @@ export async function seedDefaultData(prisma, organizationId) {
       minPoints: 5,
       maxPoints: 15,
       isDefault: true,
+      category: "Personal Growth",
     },
   ];
 
