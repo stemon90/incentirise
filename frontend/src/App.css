@@ -82,3 +82,34 @@ li {
   color: green;
   margin-bottom: 10px;
 }
+
+/* Category Filter */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.category-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #e0e0e0;
+  background: white;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.category-btn:hover {
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.category-btn.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: white;
+  font-weight: 600;
+}

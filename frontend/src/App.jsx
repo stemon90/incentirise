@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import Register from "./components/Register";
+import "./App.css";
 
 function App() {
   const [staff, setStaff] = useState(null);

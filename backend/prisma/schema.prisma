@@ -57,6 +57,7 @@ model Behavior {
   description    String?
   minPoints      Int
   maxPoints      Int
+  category       String?
   organizationId Int
   isDefault      Boolean  @default(false)
   createdAt      DateTime @default(now())

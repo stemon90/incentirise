@@ -11,6 +11,7 @@ function AwardPoints({ staff }) {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     const load = async () => {
@@ -31,6 +32,16 @@ function AwardPoints({ staff }) {
   const filtered = youth.filter((m) =>
     `${m.firstName} ${m.lastName}`.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const categories = [
+    "All",
+    ...new Set(behaviors.map((b) => b.category).filter(Boolean)),
+  ];
+
+  const filteredBehaviors =
+    selectedCategory === "All"
+      ? behaviors
+      : behaviors.filter((b) => b.category === selectedCategory);
 
   const handleSelectBehavior = (behavior) => {
     setSelectedBehavior(behavior);
@@ -84,40 +95,59 @@ function AwardPoints({ staff }) {
             onChange={(e) => setSearch(e.target.value)}
           />
           <div className="youth-list small">
-            {filtered.map((member) => (
-              <div
-                key={member.id}
-                className={`youth-card ${selectedYouth?.id === member.id ? "selected" : ""}`}
-                onClick={() => setSelectedYouth(member)}
-              >
-                <div className="youth-name">
-                  {member.firstName} {member.lastName}
+            {filtered.length === 0 ? (
+              <p className="empty">No youth found</p>
+            ) : (
+              filtered.map((member) => (
+                <div
+                  key={member.id}
+                  className={`youth-card ${selectedYouth?.id === member.id ? "selected" : ""}`}
+                  onClick={() => setSelectedYouth(member)}
+                >
+                  <div className="youth-name">
+                    {member.firstName} {member.lastName}
+                  </div>
+                  <div className="youth-points">{member.points} pts</div>
                 </div>
-                <div className="youth-points">{member.points} pts</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
         {/* Step 2: Select Behavior */}
         <div className="card">
           <h3>2. Select Behavior</h3>
-          <div className="behavior-list">
-            {behaviors.map((behavior) => (
-              <div
-                key={behavior.id}
-                className={`behavior-card ${selectedBehavior?.id === behavior.id ? "selected" : ""}`}
-                onClick={() => handleSelectBehavior(behavior)}
+          <div className="category-filter">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`category-btn ${selectedCategory === cat ? "active" : ""}`}
+                onClick={() => setSelectedCategory(cat)}
               >
-                <div className="behavior-name">{behavior.name}</div>
-                <div className="behavior-range">
-                  {behavior.minPoints} – {behavior.maxPoints} pts
-                </div>
-                {behavior.description && (
-                  <div className="behavior-desc">{behavior.description}</div>
-                )}
-              </div>
+                {cat}
+              </button>
             ))}
+          </div>
+          <div className="behavior-list">
+            {filteredBehaviors.length === 0 ? (
+              <p className="empty">No behaviors in this category</p>
+            ) : (
+              filteredBehaviors.map((behavior) => (
+                <div
+                  key={behavior.id}
+                  className={`behavior-card ${selectedBehavior?.id === behavior.id ? "selected" : ""}`}
+                  onClick={() => handleSelectBehavior(behavior)}
+                >
+                  <div className="behavior-name">{behavior.name}</div>
+                  <div className="behavior-range">
+                    {behavior.minPoints} – {behavior.maxPoints} pts
+                  </div>
+                  {behavior.description && (
+                    <div className="behavior-desc">{behavior.description}</div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
 
