@@ -66,6 +66,16 @@ nav button.active {
   font-weight: 700;
 }
 
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
 .header-right {
   display: flex;
   align-items: center;
@@ -777,18 +787,28 @@ main {
     justify-content: space-between;
   }
 
+  .hamburger-btn {
+    display: block;
+    order: 1;
+  }
+
   nav {
-    order: 2;
+    display: none;
+    order: 4;
     width: 100%;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    gap: 2px;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  nav.nav-open {
+    display: flex;
   }
 
   nav button {
-    padding: 8px 12px;
-    font-size: 13px;
-    white-space: nowrap;
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
   main {
@@ -878,4 +898,35 @@ main {
   .prize-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Category Filter */
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.category-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #e0e0e0;
+  background: white;
+  color: #555;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.category-btn:hover {
+  border-color: #f97316;
+  color: #f97316;
+}
+
+.category-btn.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: white;
+  font-weight: 600;
 }
