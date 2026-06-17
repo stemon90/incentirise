@@ -8,6 +8,7 @@ import Staff from "./Staff";
 
 function Dashboard({ staff, onLogout }) {
   const [activeTab, setActiveTab] = useState("youth");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="app">
@@ -15,40 +16,65 @@ function Dashboard({ staff, onLogout }) {
         <div className="header-left">
           <img src="/logo.png" alt="IncentiRise" className="header-logo" />
         </div>
-        <nav>
+        <button
+          className="hamburger-btn"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+        <nav className={menuOpen ? "nav-open" : ""}>
           <button
-            onClick={() => setActiveTab("youth")}
+            onClick={() => {
+              setActiveTab("youth");
+              setMenuOpen(false);
+            }}
             className={activeTab === "youth" ? "active" : ""}
           >
             Youth
           </button>
           <button
-            onClick={() => setActiveTab("award")}
+            onClick={() => {
+              setActiveTab("award");
+              setMenuOpen(false);
+            }}
             className={activeTab === "award" ? "active" : ""}
           >
             Award Points
           </button>
           <button
-            onClick={() => setActiveTab("behaviors")}
+            onClick={() => {
+              setActiveTab("behaviors");
+              setMenuOpen(false);
+            }}
             className={activeTab === "behaviors" ? "active" : ""}
           >
             Behaviors
           </button>
           <button
-            onClick={() => setActiveTab("prizes")}
+            onClick={() => {
+              setActiveTab("prizes");
+              setMenuOpen(false);
+            }}
             className={activeTab === "prizes" ? "active" : ""}
           >
             Prizes
           </button>
           <button
-            onClick={() => setActiveTab("redemptions")}
+            onClick={() => {
+              setActiveTab("redemptions");
+              setMenuOpen(false);
+            }}
             className={activeTab === "redemptions" ? "active" : ""}
           >
             Redemptions
           </button>
           {staff.role === "ADMIN" && (
             <button
-              onClick={() => setActiveTab("staff")}
+              onClick={() => {
+                setActiveTab("staff");
+                setMenuOpen(false);
+              }}
               className={activeTab === "staff" ? "active" : ""}
             >
               Staff
