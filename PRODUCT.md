@@ -34,7 +34,7 @@ IncentiRise is a rewards and accountability platform for afterschool programs, B
 
 ## Terminology
 
-- **Good Deeds** — the positive actions youth are awarded points for (formerly "Behaviors")
+- **Good Deeds** — the positive actions youth are awarded points for (formerly "Behaviors"; backend rename deferred until app is more complete)
 - **Points** — customizable per org (e.g. Club Bucks, Stars, Coins, Tokens)
 - **Prize** — what youth redeem their points for
 - **Prize Store** — a real-world event where staff fulfills redemptions (not tracked in the app)
@@ -64,6 +64,8 @@ Fields: first name, last name, date of birth (age calculated automatically), aut
 - **Program version** — youth attends a physical site, location field required
 - **Home version** — no location needed
 
+No grade field — dropped in favor of DOB-derived age only, since orgs already track demographic data like grade through other systems.
+
 ---
 
 ## Good Deeds
@@ -79,66 +81,40 @@ Good deeds are the positive actions staff award points for. They should be:
 
 Good deeds can include academic tasks, participation, character moments, leadership, cleaning and maintenance (voluntary), and anything else that reflects the above spirit.
 
-### Categories (Tags)
+### Categories — Shipped
 
-Good deeds are organized into categories for filtering on the award screen:
+Good deeds are organized into categories for filtering on the award screen: Attendance, Academic, Participation, Helping Others, Character, Leadership, Cleaning & Facility Care, Community & Citizenship, Athletics & Physical Activity, Arts & Creativity, Tech & STEM, Personal Growth.
 
-- Attendance
-- Academic
-- Participation
-- Helping Others
-- Character
-- Leadership
-- Cleaning & Facility Care
-- Community & Citizenship
-- Athletics & Physical Activity
-- Arts & Creativity
-- Tech & STEM
-- Personal Growth
+The `category` field lives on the `Behavior` model. The award screen renders a pill-style filter bar above the good deed list — tap a category to filter, "All" shows everything. Categories are also used to sort the good deed list (category, then name) when fetched from the API.
 
 ### Organization
 
-- Good deeds have tags for filtering by category
-- On the award screen, staff sees their most used good deeds first, then org-wide most used below
-- Staff can filter by category tag for fast lookup
-- Good deeds can be archived but never deleted if they have transactions attached
-- Good deeds with zero transactions can be deleted
-- The app enforces this automatically — delete is only available when transaction count is zero
-- A search bar is available on the award screen for fast lookup
-- Good deeds are sorted by usage frequency by default — rarely used ones sink naturally
+- Good deeds have a category field for filtering — shipped
+- Category filter buttons on the award screen — shipped
+- Good deeds can be archived but never deleted if they have transactions attached — not yet enforced in code
+- Good deeds with zero transactions can be deleted — not yet enforced in code
+- A search bar on the award screen for fast lookup — not yet built
+- Sort by usage frequency (staff's most used first, then org-wide) — not yet built; currently sorted by category then name
 
 ### Creating Good Deeds
 
-- Staff can create new good deeds on the fly from the award screen
-- New good deeds require Admin approval before points are awarded
-- The submission and the point award are one atomic action:
-  - Admin approves → good deed added to org list AND points land on youth balance
-  - Admin rejects → neither happens
-- This prevents staff from forgetting to award points after approval
-- Every good deed in the system has at least one transaction attached — no orphaned records
+- Staff can create new good deeds on the fly from the award screen — not yet built (currently Admin-only direct add via Behaviors tab, or Leader request via existing behavior-request flow)
+- New good deeds require Admin approval before points are awarded — partially built via existing BehaviorRequest model and approval flow
+- The submission and the point award are one atomic action — not yet fully wired to match this design; current behavior-request flow awards provisional points immediately and reverses on rejection rather than holding points pending until approval
 
 ### Good Deed Approval Flow (Behaviors Tab)
 
-- The Behaviors tab serves two purposes: management view for Admin, approval queue for new submissions
-- Staff submits a new good deed from the award screen with a point value and youth selected
-- The submission appears in the Admin's approval queue in the Behaviors tab
-- Admin approves or rejects
-- Approved: good deed added to org list, points awarded to youth
-- Rejected: nothing happens, no points awarded
+- The Behaviors tab serves two purposes: management view for Admin, approval queue for new submissions — built
+- Staff submits a new good deed from the award screen with a point value and youth selected — not yet built (current flow is a separate "Request New Behavior" form, not integrated into the award screen)
+- Admin approves or rejects — built
 
 ### Bulk Awarding
 
-- Staff can select multiple youth and award the same good deed to all of them at once
-- Useful for classroom participation, group activities, attendance
-- Each award is individually logged per youth in the audit trail
+Not yet built. Staff should be able to select multiple youth and award the same good deed to all of them at once. Useful for classroom participation, group activities, attendance.
 
 ### Flagging
 
-- The app auto-warns staff before submitting if a good deed contains obvious violations:
-  - Negative language ("didn't," "stopped," "refused")
-  - Language suggesting assigned labor rather than voluntary participation
-- The warning does not block submission — staff can proceed, but they were warned
-- No platform-level moderation — responsibility stays with the org
+Not yet built. The app should auto-warn staff before submitting if a good deed contains obvious violations (negative language, language suggesting assigned labor). Warning does not block submission. No platform-level moderation — responsibility stays with the org.
 
 ### Cleaning and Maintenance Tasks
 
@@ -151,130 +127,39 @@ This is addressed in onboarding, not enforced by the app.
 
 ### Suggestions
 
-- Award screen surfaces staff's most used good deeds first
-- Org-wide most used good deeds fill in below
-- Advanced pattern-based suggestions per youth — future feature
+Not yet built. Award screen should surface staff's most used good deeds first, then org-wide most used below. Advanced pattern-based suggestions per youth are a future feature.
 
 ---
 
 ## Default Good Deeds List
 
-Every new org is seeded with these 52 good deeds on registration. All use a sliding scale — staff picks the point value within the min/max range.
+Every new org is seeded with these 52 good deeds on registration, each with a category. All use a sliding scale — staff picks the point value within the min/max range.
 
-### Attendance (1)
+**Attendance (1):** Signed in today — 1 pt (fixed)
 
-| Good Deed       | Points    |
-| --------------- | --------- |
-| Signed in today | 1 (fixed) |
+**Academic (6):** Completed homework / Power Hour (3–10), Turned in a completed assignment (3–8), Asked for help (3–5), Helped a peer with homework (5–10), Read independently during reading time (3–8), Finished a book (5–15)
 
-### Academic (6)
+**Participation (5):** Participated in an activity (3–10), Stayed engaged for the full session (3–8), Tried something new (3–8), Raised their hand to contribute (3–5), Shared an idea with the group (3–8)
 
-| Good Deed                              | Points |
-| -------------------------------------- | ------ |
-| Completed homework / Power Hour        | 3–10   |
-| Turned in a completed assignment       | 3–8    |
-| Asked for help                         | 3–5    |
-| Helped a peer with homework            | 5–10   |
-| Read independently during reading time | 3–8    |
-| Finished a book                        | 5–15   |
+**Helping Others (5):** Helped a staff member (5–10), Helped a peer (3–10), Helped set up or clean up for an event (3–8), Helped with snack/lunch/dinner (3–8), Shared supplies with someone (3–5)
 
-### Participation (5)
+**Character (6):** Welcomed a new member (3–8), Complimented someone sincerely (3–5), Apologized sincerely (3–8), Walked away from an argument (3–8), Resolved a conflict peacefully (5–10), Took responsibility for a mistake (5–10)
 
-| Good Deed                           | Points |
-| ----------------------------------- | ------ |
-| Participated in an activity         | 3–10   |
-| Stayed engaged for the full session | 3–8    |
-| Tried something new                 | 3–8    |
-| Raised their hand to contribute     | 3–5    |
-| Shared an idea with the group       | 3–8    |
+**Leadership (4):** Mentored a younger member (5–15), Led a group activity (5–15), Kept the group focused and on task (5–10), Read to a younger member (5–10)
 
-### Helping Others (5)
+**Cleaning & Facility Care (7):** Picked up trash (3–5), Swept a room (3–8), Wiped down tables (3–5), Vacuumed the carpet (3–8), Cleaned windows (3–8), Cleaned walls (3–8), Picked up after themselves (3–5)
 
-| Good Deed                              | Points |
-| -------------------------------------- | ------ |
-| Helped a staff member                  | 5–10   |
-| Helped a peer                          | 3–10   |
-| Helped set up or clean up for an event | 3–8    |
-| Helped with snack, lunch, or dinner    | 3–8    |
-| Shared supplies with someone           | 3–5    |
+**Community & Citizenship (5):** Held the door for someone (1–3), Said please and thank you unprompted (1–3), Behaved on the bus (3–8), Behaved on a field trip (5–10), Represented the club positively (5–10)
 
-### Character (6)
+**Athletics & Physical Activity (3):** Participated in physical activity (3–8), Showed good sportsmanship (3–10), Encouraged a teammate (3–8)
 
-| Good Deed                         | Points |
-| --------------------------------- | ------ |
-| Welcomed a new member             | 3–8    |
-| Complimented someone sincerely    | 3–5    |
-| Apologized sincerely              | 3–8    |
-| Walked away from an argument      | 3–8    |
-| Resolved a conflict peacefully    | 5–10   |
-| Took responsibility for a mistake | 5–10   |
+**Arts & Creativity (3):** Completed an art project (3–10), Shared their creative work with the group (3–8), Presented a project to the group (5–15)
 
-### Leadership (4)
+**Tech & STEM (4):** Completed a coding or STEM challenge (5–15), Helped a peer troubleshoot (5–10), Learned a new tech skill (5–10), Demonstrated a project to the group (5–15)
 
-| Good Deed                          | Points |
-| ---------------------------------- | ------ |
-| Mentored a younger member          | 5–15   |
-| Led a group activity               | 5–15   |
-| Kept the group focused and on task | 5–10   |
-| Read to a younger member           | 5–10   |
+**Personal Growth (3):** Kept trying after failing (5–10), Improved on a previous attempt (5–10), Got an A on a test or assignment (5–15)
 
-### Cleaning & Facility Care (7)
-
-| Good Deed                  | Points |
-| -------------------------- | ------ |
-| Picked up trash            | 3–5    |
-| Swept a room               | 3–8    |
-| Wiped down tables          | 3–5    |
-| Vacuumed the carpet        | 3–8    |
-| Cleaned windows            | 3–8    |
-| Cleaned walls              | 3–8    |
-| Picked up after themselves | 3–5    |
-
-### Community & Citizenship (5)
-
-| Good Deed                            | Points |
-| ------------------------------------ | ------ |
-| Held the door for someone            | 1–3    |
-| Said please and thank you unprompted | 1–3    |
-| Behaved on the bus                   | 3–8    |
-| Behaved on a field trip              | 5–10   |
-| Represented the club positively      | 5–10   |
-
-### Athletics & Physical Activity (3)
-
-| Good Deed                         | Points |
-| --------------------------------- | ------ |
-| Participated in physical activity | 3–8    |
-| Showed good sportsmanship         | 3–10   |
-| Encouraged a teammate             | 3–8    |
-
-### Arts & Creativity (3)
-
-| Good Deed                                 | Points |
-| ----------------------------------------- | ------ |
-| Completed an art project                  | 3–10   |
-| Shared their creative work with the group | 3–8    |
-| Presented a project to the group          | 5–15   |
-
-### Tech & STEM (4)
-
-| Good Deed                            | Points |
-| ------------------------------------ | ------ |
-| Completed a coding or STEM challenge | 5–15   |
-| Helped a peer troubleshoot           | 5–10   |
-| Learned a new tech skill             | 5–10   |
-| Demonstrated a project to the group  | 5–15   |
-
-### Personal Growth (3)
-
-| Good Deed                        | Points |
-| -------------------------------- | ------ |
-| Kept trying after failing        | 5–10   |
-| Improved on a previous attempt   | 5–10   |
-| Got an A on a test or assignment | 5–15   |
-
-**Point economy anchor:**
-A consistently engaged kid attending 5 days/week for a full school year (~180 days) earns approximately 1,000–2,000 points depending on effort level. The PS5 ceiling at 1,500 points represents roughly one full school year of dedicated positive participation.
+**Point economy anchor:** a consistently engaged kid attending 5 days/week for a full school year (~180 days) earns roughly 1,000–2,000 points depending on effort level. The PS5 ceiling at 1,500 points represents about one full school year of dedicated positive participation.
 
 ---
 
@@ -283,23 +168,19 @@ A consistently engaged kid attending 5 days/week for a full school year (~180 da
 ### Rules
 
 - Points can only go up — never removed as discipline
-- If points were awarded by mistake, staff submits a correction request with a reason
-- Admin approves the correction
-- Points are removed only after approval
-- Both the original transaction and the correction are permanently in the audit trail — nothing is deleted, everything is documented (bank reversal model)
+- If points were awarded by mistake, staff submits a correction request with a reason — not yet built
+- Admin approves the correction — not yet built
+- Points are removed only after approval, original + correction both permanently in the audit trail (bank reversal model) — not yet built
 
 ### Custom Point Name
 
-- Admin sets a custom name for points during onboarding or in org settings
-- Examples: Club Bucks, Stars, Coins, Tokens, Roadrunner Bucks
-- The custom name cascades through the entire UI
+- `pointName` field exists on the Organization model, defaults to "points"
+- Admin sets a custom name during onboarding or in org settings — UI not yet built
+- The custom name should cascade through the entire UI — not yet wired into frontend display
 
 ### Pending Points
 
-- When a new good deed is submitted and awaiting Admin approval, points show on the youth's balance marked as pending
-- Points are confirmed and added to balance when Admin approves
-- Points disappear from balance if Admin rejects
-- No artificial urgency in the UI — natural accountability only
+Not yet built. When a new good deed is submitted and awaiting Admin approval, points should show on the youth's balance marked as pending. Confirmed and added on approval, removed on rejection. No artificial urgency in the UI.
 
 ---
 
@@ -308,137 +189,83 @@ A consistently engaged kid attending 5 days/week for a full school year (~180 da
 ### Prize Types
 
 - **Catalogued prize** — a specific named item with an exact point value
-- **Tier prize** — a bulk catch-all entry (Tier 1 Prize, Tier 2 Prize, etc.) used for donated or chaotic inventory
+- **Tier prize** — a bulk catch-all entry (Tier 1 Prize, Tier 2 Prize, etc.) used for donated or chaotic inventory; included in the default seed
 - **Experience** — a planned event or activity — always catalogued specifically
 
-### Prize Categories
+### Prize Categories — Shipped
 
-Prizes are organized into categories for filtering on the prize catalog:
+Prizes are organized into categories for filtering on the prize catalog: Small & Instant, Privileges & Experiences, Art & School Supplies, Clothing & Accessories, Toys & Games, Sports & Outdoors, Tech, Big Ticket.
 
-- Small / Instant
-- Privileges & Experiences
-- Art & School Supplies
-- Clothing & Accessories
-- Toys & Games
-- Sports & Outdoors
-- Tech
-- Big Ticket
+The `category` field lives on the `Prize` model. The Prizes tab renders the same pill-style filter bar used on the award screen. Prizes are sorted by category, then point cost, when fetched from the API.
 
 ### Prize Tiers
 
-Tiers are organizational labels to help Admin place new prizes on the scale. They are not hard limits.
+Tiers are organizational labels to help Admin place new prizes on the scale, not hard limits.
 
-| Tier   | Point Range  | Examples                                  |
-| ------ | ------------ | ----------------------------------------- |
-| Tier 1 | 15–75 pts    | Pencil, snack, privilege, stickers        |
-| Tier 2 | 75–250 pts   | Sports ball, clothing, board game         |
-| Tier 3 | 250–600 pts  | Tech accessories, instruments, Lego large |
-| Tier 4 | 600–1500 pts | Console, mountain bike, tablet            |
+Tier 1: 15–75 pts (pencil, snack, privilege, stickers). Tier 2: 75–250 pts (sports ball, clothing, board game). Tier 3: 250–600 pts (tech accessories, instruments, Lego large). Tier 4: 600–1500 pts (console, mountain bike, tablet).
 
 Big ticket prizes (Tier 4) are always catalogued specifically at their exact point value.
 
-### Quantity
+### Quantity — Shipped
 
-- Quantity field is optional on prizes
-- If set, app tracks remaining stock and closes the prize when it hits zero
+- Quantity field is optional on prizes — form no longer requires it, placeholder reads "Leave blank for unlimited"
+- Backend defaults to 999 (effectively unlimited) instead of 1 when left blank
+- If set, app tracks remaining stock and closes the prize when it hits zero — display only; depletion logic not yet enforced
 - If not set, prize stays open until Admin archives or closes it manually
 
 ### Redemption Flow
 
-**Pre-requested (catalogued prizes)**
+**Pre-requested (catalogued prizes)** — built via existing Redemption model and approval flow. Youth requests a specific prize, it sits pending in the Admin queue, staff fulfills when ready and marks fulfilled, points deducted.
 
-- Youth requests a specific prize through the app
-- Sits as pending in the Admin queue
-- Staff fulfills when ready
-- Staff marks as fulfilled, points deducted
-
-**On-the-spot (tier prizes)**
-
-- Staff pulls up youth profile
-- Selects the tier of the item the youth chose from a physical pile or box
-- Points deducted immediately
-- No prior request needed
+**On-the-spot (tier prizes)** — not yet built. Staff pulls up youth profile, selects the tier of the item the youth physically chose, points deducted immediately, no prior request needed.
 
 ### Prize Rules
 
-- Prizes should never include meals or basic sustenance — onboarding guidelines and terms of service
-- Snacks and treats are fine
+Prizes should never include meals or basic sustenance — covered via onboarding guidelines and terms of service (not yet written). Snacks and treats are fine.
 
 ### Archive and Delete
 
-- Zero redemptions → delete allowed
-- Has redemptions → archive only, app enforces automatically
+Zero redemptions → delete allowed. Has redemptions → archive only, enforced automatically. Not yet enforced in code — current delete is unconditional.
 
 ---
 
 ## Default Prize List
 
-Every new org is seeded with 110 prizes on registration across 8 categories. See seed file for full list.
+Every new org is seeded with 110 prizes on registration across 8 categories. See `backend/src/seed/defaultSeed.js` for the full list with categories and point values.
 
-**Point economy anchors:**
-
-- Wooden pencil — 15 pts (floor)
-- PS5 / Xbox Series X — 1,500 pts (ceiling)
+**Point economy anchors:** wooden pencil — 15 pts (floor); PS5 / Xbox Series X — 1,500 pts (ceiling).
 
 ---
 
 ## Group Challenges
 
-- Admin creates group challenges with a goal, a prize, and an optional deadline
-- Maximum 3 active challenges at once per org
-- The entire center can be the group for center-wide challenges
-
-### Funding
-
-- Individual donations — youth voluntarily donate existing points (private, no leaderboard)
-- Staff-designated group events — staff awards points directly to the pool
-
-### Rules
-
-- Donations are voluntary and private
-- No minimum contribution — youth benefit regardless of contribution
-- Goal reached → everyone receives the prize
-- Challenge fails or expires → donated individual points returned, staff-designated points disappear
+Not yet built. Admin creates group challenges with a goal, a prize, and an optional deadline. Max 3 active per org. Funded via private individual donations and/or staff-designated group events. No minimum contribution. Goal reached → everyone gets the prize. Challenge fails → donated points returned, staff-designated points disappear.
 
 ---
 
 ## Youth of the Month
 
-- Staff nominated — Admin or any staff selects youth of the week or month
-- Can be by category (Art, Athletics, STEM, Academic, etc.)
-- Winner receives a free prize credit — not bonus points
-- Admin sets the prize tier limit for the credit
-- No automatic selection — leaderboard informs but human decides
-- Aligns with existing Boys & Girls Club youth recognition traditions
+Not yet built. Staff nominated, optionally by category, winner gets a free prize credit (not bonus points) at an Admin-set tier limit. No automatic selection.
 
 ---
 
 ## Youth Profile
 
-Designed for fast daily use.
+Built, with room to grow. Currently shows current point balance, QR code, prize redemption list, and point history (good deed, note, staff, points earned).
 
-Shows:
-
-- Current point balance
-- Pending points (if any)
-- Recent activity — "Did homework — 10 points"
-
-Deep historical data lives in a separate Admin reports section.
+Still needed: pending points display, a leaner faster-loading daily-use view, and a separate Admin reports section for deep historical data.
 
 ---
 
 ## Reporting
 
-- Every point transaction is permanently logged — never deleted
-- Every good deed award includes: staff, youth, good deed, amount, note, timestamp
-- Every correction is logged alongside the original transaction
-- Reports section (Admin only) — per youth stats, org-wide activity, grant-ready impact data
+Every point transaction is permanently logged with staff, youth, good deed, amount, note, and timestamp — built. Correction audit trail — not yet built (correction flow doesn't exist yet). Reports section for per-youth stats, org-wide activity, and grant-ready impact data — not yet built.
 
 ---
 
 ## Rules, Restrictions & Community Guidelines
 
-Presented during onboarding and agreed to via terms of service at signup.
+To be presented during onboarding and agreed to via terms of service at signup (onboarding flow not yet built). The app enforces what software can enforce; human behavior in the physical world is the org's responsibility.
 
 1. Points cannot be removed as discipline — ever
 2. Corrections require Admin approval and are permanently documented
@@ -452,41 +279,45 @@ Presented during onboarding and agreed to via terms of service at signup.
 
 ## Onboarding
 
-Every new org registration:
-
-- Agrees to community guidelines and terms of service
-- Receives 52 default good deeds pre-seeded
-- Receives 110 default prizes pre-seeded
-- Admin sets custom point name
-- Admin sets prize tier limits for youth of the month credit
-- Onboarding walks orgs through point economy so they understand how effort maps to prizes
+Not yet built as a formal flow. New org registration already auto-seeds 52 good deeds and 110 prizes. Still needed: terms of service agreement, custom point name setup, prize tier limits for youth of the month, and a walkthrough of how effort maps to prizes.
 
 ---
 
 ## Authentication
 
-- Staff login via email and password
-- Forgot password — email → reset link → new password → return to login
-- New org registration creates org and first Admin account in one step
+Staff login via email and password — built. Forgot password (email → reset link → new password → login) — not yet built. New org registration creates org and first Admin account in one step, with auto-seeded good deeds and prizes — built.
 
 ---
 
 ## What's Still Open
 
-- [ ] Tags/categories on good deeds — filter on award screen, management in Behaviors tab
-- [ ] Categories on prizes — filter on prize catalog
-- [ ] Good deed approval flow — staff submits from award screen, Admin approves/rejects in Behaviors tab, atomic point award
-- [ ] Archive vs delete enforcement on good deeds and prizes
+### Shipped this session
+
+- [x] Tags/categories on good deeds — `category` field added to Behavior model, migration run, seed updated, award screen filters by category
+- [x] Categories on prizes — `category` field added to Prize model, migration run, seed updated, Prizes tab filters by category
+- [x] Prize quantity made optional (defaults to 999 / unlimited instead of requiring 1)
+
+### UI bugs / polish flagged this session, not yet fixed
+
+- [ ] Nav link styling — header links look washed out in their default state and too heavy when selected; needs cleaner active/inactive contrast
+- [ ] Spacing issue — tab labels (Youth, Prizes, Staff, etc.) sit too close to their "+ Add" buttons on those pages; needs more breathing room in the page header layout
+
+### Not yet built
+
+- [ ] Good deed approval flow fully wired so submission + point award is one atomic action (currently uses the older provisional-points/behavior-request model)
+- [ ] Archive vs delete enforcement on good deeds and prizes (zero transactions → delete; has transactions → archive only)
 - [ ] Pending points display on youth balance
-- [ ] Correction request flow — accidental point removal with Admin approval and audit trail
+- [ ] Correction request flow — accidental point removal with Admin approval and permanent audit trail
 - [ ] Bulk awarding — award same good deed to multiple youth at once
-- [ ] Visual prize spectrum — design and interaction model
+- [ ] Visual prize spectrum — design and interaction model for placing new prizes on the point scale intuitively
 - [ ] Group challenges
 - [ ] Youth of the month with free prize credit
-- [ ] Admin reports section
+- [ ] Admin reports section (deep historical data, grant-ready reports)
 - [ ] Prize expiration / time-limited prizes
 - [ ] Youth-facing mobile view
 - [ ] Forgot password email implementation
 - [ ] Stripe integration and subscription tiers
-- [ ] Smart suggestions — future
+- [ ] Smart suggestions (staff's most-used good deeds first, then org-wide) — future
 - [ ] Deprecation prompts for unused good deeds — future
+- [ ] Full Good Deeds rename across backend (model name, route paths, variable names, CSS classes) — deferred until app is more feature-complete
+- [ ] Production database cleanup — remove old test orgs from incentirise.com while preserving the real org (steven@incentirise.com)

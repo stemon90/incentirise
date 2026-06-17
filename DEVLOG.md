@@ -537,6 +537,58 @@ Key decisions made:
 3. Update seed to include categories for all 52 good deeds and 110 prizes
 4. Update UI to filter by category on award screen and prize catalog
 
+### Category Filtering — Day 26
+
+**Goal:** Add categories to good deeds and prizes so the 52-item and 110-item default lists are filterable instead of one long flat scroll.
+
+**Schema changes:**
+
+- Added `category String?` field to `Behavior` model — migration `add-category-to-behavior`
+- Added `category String?` field to `Prize` model — migration `add-category-to-prize`
+- Ran `npx prisma generate` after each migration (client validation errors occur otherwise — Prisma client doesn't recognize new fields until regenerated)
+
+**Backend changes:**
+
+- `behaviors.js` — POST and PATCH routes accept and persist `category`; GET route now orders by `[{ category: "asc" }, { name: "asc" }]`
+- `prizes.js` — POST and PATCH routes accept and persist `category`; GET route now orders by `[{ category: "asc" }, { pointCost: "asc" }]`
+- `prizes.js` — quantity default changed from `1` to `999` when left blank, to actually behave as "unlimited"
+- `defaultSeed.js` — every one of the 52 good deeds and 110 prizes now has a `category` field matching the categories defined in PRODUCT.md
+
+**Frontend changes:**
+
+- `AwardPoints.jsx` — added category filter pill bar above the good deed list; derives unique categories from the loaded behaviors, "All" option included; added empty states for no youth match / no behaviors in category
+- `Prizes.jsx` — same pattern: category filter pill bar, category field added to the Add Prize form, quantity field now optional with "Leave blank for unlimited" placeholder
+- `Youth.jsx` — removed grade field from the add-youth form and from the profile display (decided DOB-derived age is sufficient, grade tracked elsewhere by orgs)
+- `App.css` — added `.category-filter` and `.category-btn` styles (pill buttons, orange active state)
+- `App.jsx` — discovered `App.css` was never being imported, so none of the custom styles were rendering; added `import "./App.css"` at the top. This was a longstanding latent bug — the app was running on browser-default styling the whole time.
+
+**Known gotchas hit this session:**
+
+- After adding a field to the Prisma schema, the migration alone isn't enough — `npx prisma generate` must be run or `PrismaClientValidationError: Unknown argument` is thrown on first use of the new field, even though the database column exists
+- Editing `defaultSeed.js` by hand introduced a syntax error (stray `}` / `];` after the prizes array, and at one point a missing closing brace for the whole `seedDefaultData` function) — Node failed with `SyntaxError: Unexpected end of input` and `npm run dev` crashed entirely instead of restarting cleanly; fixed by carefully re-closing the function
+- Local Postgres auth failures resurfaced (`stevenuser` password mismatch) — resolved by resetting the role password directly in `psql` rather than fighting bash's history-expansion on `!` in the connection string
+- Registering through the UI while already logged in just redirects to the dashboard instead of erroring — looks like "nothing happened" but is expected behavior, not a bug
+- A partial registration (org + Staff created, then seed function throws) leaves a real Staff row with a usable email and no good deeds/prizes attached — shows up later as "email already in use" with an empty org; cleaned up manually via cascading deletes through PointTransaction → Redemption → Youth → Behavior → Prize → BehaviorRequest → Staff → Organization, in that order, due to foreign key constraints
+
+**UI issues identified but not yet fixed (flagged for next session):**
+
+- Header nav links: inactive state reads as too light/washed out, active state reads as too dark/heavy — needs a softer contrast pass
+- Page header layout: tab title (e.g. "Youth", "Prizes", "Staff") sits too close to its adjacent "+ Add" button — needs more spacing in the `page-header` flex layout
+
+**Outstanding from previous session, still true:**
+
+- Production org (steven@incentirise.com) predates the auto-seed feature and has none of the 52/110 default lists — would need manual seeding or a one-off script if a live demo of the full catalog is needed on incentirise.com
+- Steven wants to eventually wipe all test/demo orgs from the production database while preserving the real org, but deferred to a future session
+
+**Next session priorities:**
+
+1. Fix nav link active/inactive styling
+2. Fix page-header spacing between tab labels and add buttons
+3. Decide on and build either the visual prize spectrum or move toward the good-deed approval/pending-points atomic flow
+4. Production database cleanup (remove test orgs, keep steven@incentirise.com)
+
+- **Day 26 complete**
+
 ---
 
 ## Product Roadmap
