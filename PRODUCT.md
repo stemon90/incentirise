@@ -297,10 +297,12 @@ Staff login via email and password — built. Forgot password (email → reset l
 - [x] Categories on prizes — `category` field added to Prize model, migration run, seed updated, Prizes tab filters by category
 - [x] Prize quantity made optional (defaults to 999 / unlimited instead of requiring 1)
 
-### UI bugs / polish flagged this session, not yet fixed
+### Shipped in follow-up session (nav, spacing, logo)
 
-- [ ] Nav link styling — header links look washed out in their default state and too heavy when selected; needs cleaner active/inactive contrast
-- [ ] Spacing issue — tab labels (Youth, Prizes, Staff, etc.) sit too close to their "+ Add" buttons on those pages; needs more breathing room in the page header layout
+- [x] Nav link styling and mobile UX — consolidated App.css and index.css into a single stylesheet (App.css was a leftover V1 file silently conflicting with the real styles), replaced horizontal-scroll mobile nav with a hamburger dropdown menu
+- [x] Fixed a breakpoint conflict where the landscape tablet media query (max-width: 1024px) overlapped with the new hamburger breakpoint (max-width: 768px), causing nav buttons to disappear around 696–768px wide; landscape query now scoped to min-width: 769px
+- [x] Page-header spacing — added `gap: 24px` to the shared `.page-header` rule, fixing the cramped spacing between tab titles and their "+ Add" buttons across all six pages (Youth, Staff, Prizes, Redemptions, AwardPoints, Behaviors) in one change
+- [x] Logo fixes — cropped logo.png to remove excess transparent canvas (was 1536×1024 with the actual mark occupying only a fraction of that space), resized and centered the login screen logo and heading/subtitle text, resized the dashboard header logo so it no longer reads as tiny against the 60px header bar
 
 ### Not yet built
 

@@ -589,6 +589,62 @@ Key decisions made:
 
 - **Day 26 complete**
 
+### Nav Consolidation, Hamburger Menu, Spacing & Logo Fixes — Day 27
+
+**Goal:** Fix the nav link styling complaint and replace mobile horizontal-scroll nav with something cleaner, then clean up two more flagged UI issues (page-header spacing, logo sizing/centering) in the same sitting.
+
+**Root cause discovered — duplicate stylesheets:**
+
+- `App.css` (leftover boilerplate from the original Day 5 V1 build, plain gray/black nav styling) was being imported in `App.jsx`, while `index.css` (the real, polished stylesheet — dark header, orange gradient on the active nav tab) was already being imported separately in `main.jsx`
+- Both were active at once, fighting over the same `nav button` and `nav button.active` selectors — this is almost certainly why the nav sometimes looked like unstyled HTML defaults instead of the intended dark/orange design
+- Fix: deleted `App.css` entirely, removed `import "./App.css"` from `App.jsx`, moved the `.category-filter` / `.category-btn` rules (the only thing actually unique to App.css, added last session) into `index.css`
+- Confirmed in-browser that nav and category pills still render correctly with only `index.css` active
+
+**Hamburger menu for mobile:**
+
+- Added `menuOpen` state to `Dashboard.jsx`, a hamburger toggle button (☰) between the logo and nav, and a `nav-open` class applied conditionally to `<nav>`
+- All six nav buttons (Youth, Award Points, Behaviors, Prizes, Redemptions, Staff) now close the menu on click in addition to setting the active tab
+- Added `.hamburger-btn` CSS (hidden by default, `display: block` only inside the `max-width: 768px` media query) and restructured the mobile nav rule to `display: none` by default, `display: flex; flex-direction: column` when `.nav-open` is applied, replacing the old `overflow-x: auto` horizontal scroll
+- Decided against closing the menu on hover-out or click-outside — not the standard mobile pattern (no cursor on touch devices, and click-outside can mis-fire mid-scroll); tap-to-toggle plus close-on-select is the same pattern used by most production mobile apps
+
+**Bug caught during testing — breakpoint overlap:**
+
+- At a window width of ~696px, the hamburger menu would open but render no visible nav buttons
+- Root cause: the existing landscape tablet media query (`max-width: 1024px and orientation: landscape`) was still firing alongside the new `max-width: 768px` hamburger query at that width, since a desktop browser window narrower than it is tall reads as "landscape." The two queries set conflicting `flex-direction` / `flex-wrap` values on `<nav>`, collapsing the buttons to zero visible height even though `display: flex` was technically applied
+- Fix: scoped the landscape query to `min-width: 769px` as well, so it no longer overlaps with the hamburger breakpoint at all — hamburger mode now cleanly owns 0–768px, compact landscape nav owns 769–1024px, no shared territory
+- Verified across the full range top to bottom in dev tools after the fix — no more dead zones
+
+**Page-header spacing fix:**
+
+- All six pages (Youth, Staff, Prizes, Redemptions, AwardPoints, Behaviors) share one `.page-header` class for the title + "+ Add" button row
+- The rule used `justify-content: space-between` with no `gap`, so in some viewport widths the title and button ended up touching with no breathing room
+- Added `gap: 24px` to `.page-header` — one change fixed the spacing across all six pages at once
+
+**Logo fixes:**
+
+- Discovered `logo.png` was 1536×1024 with a lot of dead transparent canvas around the actual artwork — tried ImageMagick `-trim` (both plain and with `-fuzz 5%`) but the alpha trim didn't catch it, since the padding likely wasn't pure transparent
+- User manually cropped the logo using an online tool, producing a much tighter 809×576 image — replaced `frontend/public/logo.png` with the new crop
+- Login screen: added `text-align: center` to `.login-card` so the heading and subtitle center correctly (previously left-aligned by default with no rule overriding it); centered the logo specifically with `display: block; margin: 0 auto`; resized to `width: 140px`
+- Dashboard header: after the crop, the logo initially looked huge at 100px (overflowing into the body) — settled on `height: 46px` for a clean fit inside the 60px header bar
+
+**Known gotchas hit this session:**
+
+- Browsing the local dev app at `127.0.0.1:5173` instead of `localhost:5173` caused a login failure that looked like a broken account — they're different origins to the browser even though they're the same machine; always use `localhost` for local dev
+- Running `~/projects/incentirise/frontend/public/logo.png` directly in bash (instead of opening it with a viewer) throws a generic permission-denied error — bash is trying to execute the PNG as a script, not actually blocked by file permissions; use `code <path>` or an image viewer instead
+- `convert -trim` and even `-fuzz 5% -trim` did not meaningfully reduce the original logo's canvas size (1536×1024 → 1500×1022) despite there clearly being visual dead space — manual/visual cropping was needed instead, since the padding wasn't simply uniform transparent or near-background pixels ImageMagick's alpha/fuzz trim could detect automatically
+
+**Decided NOT to do tonight:**
+
+- A full aesthetic redesign pass (sizing, spacing, color/brand decisions as a deliberate overall pass) — explicitly deferred to its own future session rather than continuing to patch one element at a time
+
+**Next session priorities:**
+
+1. Full aesthetic/design pass — deliberate sizing, spacing, and brand decisions rather than reactive bug fixes
+2. Decide next feature build: pending points display, bulk awarding, or the good-deed atomic approval flow
+3. Seed `steven@incentirise.com` on production (it predates the auto-seed feature and currently has none of the 52/110 default lists) and/or do the broader production database cleanup (remove test/demo orgs while preserving the real one)
+
+- **Day 27 complete**
+
 ---
 
 ## Product Roadmap
