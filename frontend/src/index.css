@@ -304,6 +304,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   margin-bottom: 20px;
 }
 
@@ -862,7 +863,7 @@ main {
 
 /* ── Landscape phones and tablets ───────────────────────────────────────── */
 
-@media (max-width: 1024px) and (orientation: landscape) {
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
   header {
     flex-wrap: nowrap;
     height: auto;
