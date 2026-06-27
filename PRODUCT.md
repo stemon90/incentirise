@@ -263,6 +263,46 @@ Every point transaction is permanently logged with staff, youth, good deed, amou
 
 ---
 
+## Platform Administration & Data Lifecycle
+
+This section covers platform-owner operations and data deletion — distinct from the org-facing app features above.
+
+### Current state
+
+There is no in-app deletion flow at all. Org/youth/staff deletion is currently done by hand against the production database. This is acceptable only because the platform is pre-launch with no real customer data; it is not a sustainable approach once real orgs exist.
+
+### deleteOrgs dev script — Shipped
+
+`backend/scripts/deleteOrgs.js` is a developer maintenance tool (not an app feature) for clearing test/demo orgs during development. Steven expects to create many throwaway test orgs over time (testing seeds, checking features, letting friends log in to look around), so a reusable, guarded tool beats re-deriving a delete each time.
+
+Behavior: takes org IDs as CLI arguments, refuses to run with no IDs, prints a summary of each target org (name, admins, counts) and requires the operator to type `yes`, then runs all deletes inside one `prisma.$transaction` in FK-safe order (PointTransaction → Redemption → BehaviorRequest → Behavior → Prize → Youth → Staff → Organization) so a partial failure rolls back. Run against production by `docker cp`-ing it into the running backend container and invoking with `docker exec`, reusing the app's already-configured Prisma client environment.
+
+### Super admin panel — Not yet built
+
+The proper long-term replacement for the deleteOrgs script. A platform-owner view across all orgs (inspect/manage/delete any org) so test-org cleanup and tenant management become a click in a protected internal admin view instead of a terminal command. Must be built carefully — cross-org access deliberately bypasses org isolation and is a dangerous capability if it ever leaks to a normal user. Likely a `superAdmin` flag on Staff (or a separate concept) plus protected routes and a dedicated view.
+
+### Soft-delete (org-facing) — Not yet built
+
+When org admins delete a youth or staff member, the app should mark a `deletedAt` timestamp and filter the record out of queries rather than hard-deleting it. Industry-standard pattern: a club admin will eventually delete the wrong kid and need them back. Hard deletes (like the dev script) stay reserved for true data removal. Pairs with the super admin panel.
+
+---
+
+## Seeding Strategy
+
+### Current behavior
+
+Auto-seed runs exactly once, at org registration, populating a new org with the full 52 good deeds and 110 prizes from `defaultSeed.js` as it exists at that moment. After registration the org is independent — later changes to the default list do **not** propagate to existing orgs.
+
+### Additive re-seed / sync script — Not yet built
+
+A tool to apply newly added default good deeds and prizes to an _existing_ org without touching its existing data, youth, or points. Needed the moment a real org with data it can't lose wants updated defaults (since "delete and re-register to get the new seed" stops being an option once the org holds real data). Sibling tool to `deleteOrgs.js`.
+
+### Open question: full seed vs. starter set + template library — Not yet decided
+
+Whether new orgs should keep getting the full 52/110 seed (current) or instead start with a small universal starter set plus an opt-in template library they pull from by category. The trade-off is the blank-page activation problem (too little, and a busy director bounces) against overwhelm and pruning work (too much, and orgs keep defaults they never wanted). The likely middle path — small starter set plus a platform-provided "default library" orgs add from — converges with the additive re-seed idea above. Deserves its own dedicated design session.
+
+---
+
 ## Rules, Restrictions & Community Guidelines
 
 To be presented during onboarding and agreed to via terms of service at signup (onboarding flow not yet built). The app enforces what software can enforce; human behavior in the physical world is the org's responsibility.
@@ -279,13 +319,15 @@ To be presented during onboarding and agreed to via terms of service at signup (
 
 ## Onboarding
 
-Not yet built as a formal flow. New org registration already auto-seeds 52 good deeds and 110 prizes. Still needed: terms of service agreement, custom point name setup, prize tier limits for youth of the month, and a walkthrough of how effort maps to prizes.
+Not yet built as a formal flow. New org registration already auto-seeds 52 good deeds and 110 prizes. Still needed: terms of service agreement, custom point name setup, prize tier limits for youth of the month, and a walkthrough of how effort maps to prizes. The seeding-strategy question above (full seed vs. starter set + template library) directly shapes what onboarding looks like.
 
 ---
 
 ## Authentication
 
 Staff login via email and password — built. Forgot password (email → reset link → new password → login) — not yet built. New org registration creates org and first Admin account in one step, with auto-seeded good deeds and prizes — built.
+
+Note: the primary org's admin login (`steven@incentirise.com`) is currently an identifier only — no real mailbox is configured on the domain yet. Fine while email features (forgot-password, notifications) don't exist; a real inbox will be needed there before those ship.
 
 ---
 
@@ -304,6 +346,11 @@ Staff login via email and password — built. Forgot password (email → reset l
 - [x] Page-header spacing — added `gap: 24px` to the shared `.page-header` rule, fixing the cramped spacing between tab titles and their "+ Add" buttons across all six pages (Youth, Staff, Prizes, Redemptions, AwardPoints, Behaviors) in one change
 - [x] Logo fixes — cropped logo.png to remove excess transparent canvas (was 1536×1024 with the actual mark occupying only a fraction of that space), resized and centered the login screen logo and heading/subtitle text, resized the dashboard header logo so it no longer reads as tiny against the 60px header bar
 
+### Shipped in production cleanup session
+
+- [x] Production database cleanup — removed all four test/demo orgs from the live RDS and re-registered the primary org fresh so it carries the current 52/110 auto-seed. The original plan ("preserve the real org `steven@incentirise.com`, delete only the test orgs") was abandoned mid-session: that org predated auto-seed, held only throwaway test data, and re-registering it was simpler than back-filling its seed. A manual RDS snapshot (`incentirise-pre-cleanup-20260623`) was taken first as the restore point.
+- [x] Reusable `deleteOrgs.js` dev script — see "Platform Administration & Data Lifecycle" above. Committed on `chore/prod-cleanup`.
+
 ### Not yet built
 
 - [ ] Good deed approval flow fully wired so submission + point award is one atomic action (currently uses the older provisional-points/behavior-request model)
@@ -319,7 +366,10 @@ Staff login via email and password — built. Forgot password (email → reset l
 - [ ] Youth-facing mobile view
 - [ ] Forgot password email implementation
 - [ ] Stripe integration and subscription tiers
+- [ ] Super admin panel — cross-org platform-owner management; proper replacement for the deleteOrgs dev script (see Platform Administration)
+- [ ] Soft-delete for org-facing youth/staff deletion (see Platform Administration)
+- [ ] Additive re-seed / sync script — push updated defaults to existing orgs without touching their data (see Seeding Strategy)
+- [ ] Revisit seeding strategy — full seed vs. starter set + opt-in template library; needs its own design session (see Seeding Strategy)
 - [ ] Smart suggestions (staff's most-used good deeds first, then org-wide) — future
 - [ ] Deprecation prompts for unused good deeds — future
 - [ ] Full Good Deeds rename across backend (model name, route paths, variable names, CSS classes) — deferred until app is more feature-complete
-- [ ] Production database cleanup — remove old test orgs from incentirise.com while preserving the real org (steven@incentirise.com)
