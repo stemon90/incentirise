@@ -55,9 +55,7 @@ Career goal: Cloud/DevOps Engineer at $100k+ after tax.
 
 ## Current Position
 
-## Current Position
-
-Phase 11 complete — incentirise.com live on HTTPS, data persisting in RDS, nginx proxy routing API calls internally
+Day 28 complete — incentirise.com live on HTTPS. Production database cleaned: all four test/demo orgs removed and the primary org re-registered fresh, so it now carries the current 52/110 auto-seed. Reusable deleteOrgs dev script committed on chore/prod-cleanup. Domain previously down from a clientHold (unverified registrant email) — now resolved.
 
 ---
 
@@ -645,6 +643,62 @@ Key decisions made:
 
 - **Day 27 complete**
 
+### Production Cleanup & Outage Fix — Day 28
+
+**Goal:** Production database cleanup — remove the accumulated test/demo orgs and get the primary org onto the current 52/110 auto-seed. Branched `chore/prod-cleanup` off main per the no-direct-commits-to-main rule.
+
+**Site outage diagnosed and fixed first (incentirise.com was down):**
+
+- Symptom in the browser was `DNS_PROBE_FINISHED_NXDOMAIN` — the domain wasn't resolving at all, so the problem was above the load balancer, not in the app. (Confirmed the ALB target was `healthy` the whole time — the app was fine, just unreachable by name.)
+- `aws route53domains get-domain-detail` showed the registration was paid through 2027 with auto-renew on and correct nameservers, but `StatusList` contained **`clientHold`**. `clientHold` tells the registry to stop publishing DNS for the domain entirely → NXDOMAIN.
+- Cause: unverified registrant contact email. ICANN requires the registrant email to be verified; the verification request had gone unanswered, so the registrar suspended the domain via `clientHold`.
+- Fix: verified the registrant email. The hold cleared at the registry a short time later — re-checking `StatusList` showed only `clientTransferProhibited` remaining (that one is a normal protective lock, kept on purpose). `dig @<ns> incentirise.com` then returned the six ALB IPs, confirming resolution restored.
+
+**Production cleanup:**
+
+- Took a manual RDS snapshot `incentirise-pre-cleanup-20260623` on instance `incentirise-db-tf` as the restore point, and waited for it to read `available` before any destructive step. (First attempt at the snapshot last session never actually ran — `DescribeDBSnapshots` returned `DBSnapshotNotFound` — so re-ran it and confirmed this time.)
+- Ran a read-only inventory of all orgs through the live backend container. Found 4 orgs:
+  - id 1 — IncentiRise — `steven@incentirise.com` (ADMIN) + `eharrington121@gmail.com` (LEADER); **15 behaviors / 14 prizes** (the _old_ pre-auto-seed defaults), 1 youth, 2 transactions
+  - id 2 — Axiomatas — `zekesocialmedia@gmail.com`; 1/1/1 — test
+  - id 3 — Backflow Kings — `perezjake49@gmail.com`; full 52/110 — test
+  - id 4 — ShizzyBizzy — `bryanmontoya83@outlook.com`; full 52/110 — test
+- **Plan changed mid-session.** Original plan was "seed org 1, delete 2–4." Decided instead to delete **all four** including org 1: it was all throwaway test data (no real users yet), and re-registering org 1 fresh gives it the current 52/110 auto-seed in one step — simpler than back-filling the old org's seed. So the seed-existing-org step was dropped entirely.
+- Built reusable dev script `backend/scripts/deleteOrgs.js` (committed on `chore/prod-cleanup`): takes org IDs as CLI args, refuses to run with none, prints a per-org summary and requires the operator to type `yes`, then runs all deletes inside one `prisma.$transaction` in FK-safe order so a partial failure rolls back. Built as a real reusable tool rather than a throwaway because many more test orgs are expected over time (seed testing, feature checks, friends logging in to look around).
+- Confirmed FK-safe deletion order: PointTransaction → Redemption → BehaviorRequest → Behavior → Prize → Youth → Staff → Organization.
+- Ran a dry run (typed a non-`yes` value, confirmed it listed the right orgs and cancelled), then deleted orgs 2/3/4, verified count dropped from 4 to 1, then deleted org 1. Database left at zero orgs (expected, intended).
+- Re-registered the org through the live site (incentirise.com → Get Started). Confirmed the auto-seed fired — new org carries the full 52 good deeds / 110 prizes. Cleanup complete.
+
+**Known gotchas hit this session:**
+
+- **SSH to the domain hangs forever.** `ssh ec2-user@incentirise.com` silently hangs because the domain resolves to the **ALB**, and a load balancer doesn't speak SSH. Must SSH to the **instance's** public IP directly. (Prior successful SSHs were to the instance IP, not the domain.)
+- **Two running EC2 instances exist.** `incentirise-asg-node` (the live ASG-launched node serving the app — was `3.236.65.55` this session) and a separate `incentirise-backend-tf`. Identify the live one via ALB target health / the ASG node tag before SSHing; don't assume.
+- **SSH port 22 on the backend SG is open to `0.0.0.0/0`** (the whole internet), plus a redundant `/32` for the personal IP. This predates the session. Flagged as a real hardening item — should be scoped to known IPs (see roadmap).
+- **Prisma v7 cannot be constructed bare.** `new PrismaClient()` throws `PrismaClientInitializationError` — v7 requires the adapter. For one-off scripts/commands against prod, replicate the app's construction exactly: `const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL }); const prisma = new PrismaClient({ adapter });`. The app builds this in `backend/src/index.js` (the only file with `new PrismaClient`), but importing `index.js` boots the whole Express server, so replicate the construction inline rather than importing it.
+- **`docker cp` needs the destination directory to already exist in the container.** `docker cp file container:/app/scripts/file` reported "Successfully copied" but the file wasn't there, because `/app/scripts/` didn't exist in the container and the path got interpreted ambiguously. Fix: `docker exec <container> mkdir -p /app/scripts` first, then `docker cp`.
+- **A git push that silently didn't happen.** Last session's `git add/commit/push` block apparently never ran — the file stayed **untracked** (`git status` showed `backend/scripts/` untracked, no commit in the log), so the branch never reached GitHub, and the EC2 `git checkout chore/prod-cleanup` failed with `pathspec ... did not match any file(s)`. Lesson: run `git add` / `commit` / `push` as separate commands and confirm the `* [new branch] ... -> ...` line actually prints before assuming the push landed.
+- The two RDS warnings on every script run (SSL-mode deprecation alias warning, and the `NODE_TLS_REJECT_UNAUTHORIZED=0` insecure-TLS warning) are expected noise from the known RDS setup — ignore them.
+
+**Decisions / takeaways:**
+
+- The app has **no in-app deletion flow** at all — that's why deletion is a terminal operation right now. Acceptable only because it's pre-launch with no real data. The proper long-term answers (a super admin cross-org panel to replace the dev script, and soft-delete for org-facing youth/staff deletion) are now in PRODUCT.md.
+- Auto-seed runs **only once, at registration** — existing orgs never get updates to the default list. An additive re-seed/sync script is the realistic near-term tool for pushing updated defaults to a real org once it has data that can't be deleted. Also noted in PRODUCT.md, along with an open question on whether to keep the full 52/110 seed or move to a starter set + opt-in template library.
+- `steven@incentirise.com` is a login identifier only — no real mailbox is configured on the domain yet. Fine until email features (forgot-password, notifications) ship.
+
+**Known issues / follow-ups:**
+
+- SSH port 22 open to `0.0.0.0/0` on `incentirise-backend-sg-tf` — scope down to known IPs (hardening).
+- Suspected Terraform drift — the two running instances and the SG state suggest `.tf` and live AWS have diverged; worth a `terraform plan` to see the gap. (Still consistent with the long-standing "Terraform not fully reflecting Phase 11 changes" note.)
+- `chore/prod-cleanup` is pushed; PR merge status to confirm/complete next session. Decide whether `deleteOrgs.js` merges to main (useful keeper) — verified nothing imports from `scripts/` so it's inert in the build.
+- The manual snapshot `incentirise-pre-cleanup-20260623` can be deleted once confident the cleanup is good (it costs a little storage while it sits).
+
+**Next session priorities:**
+
+1. Merge `chore/prod-cleanup` (or confirm it merged); update PRODUCT.md + DEVLOG on their own docs branch.
+2. Scope SSH (port 22) down from `0.0.0.0/0`, and run `terraform plan` to assess drift.
+3. Resume the deferred Day 27 item: full aesthetic/design pass, or pick the next feature build (pending points display, bulk awarding, or the good-deed atomic approval flow).
+
+- **Day 28 complete**
+
 ---
 
 ## Product Roadmap
@@ -652,6 +706,9 @@ Key decisions made:
 ### INFRASTRUCTURE & OPERATIONS
 
 - [ ] Replace NODE_TLS_REJECT_UNAUTHORIZED=0 with proper RDS CA cert
+- [ ] Scope SSH (port 22) on incentirise-backend-sg-tf down from 0.0.0.0/0 to known IPs
+- [ ] Run terraform plan to assess drift (two running instances + SG state suggest .tf and live AWS have diverged)
+- [ ] Reconcile SSH ingress and other drifted rules back into Terraform so applies don't wipe them
 
 ### MOBILE & UX
 
@@ -697,6 +754,14 @@ Key decisions made:
 - [ ] Analytics dashboard — attendance trends, top behaviors, redemption rates
 - [ ] Read-only parent org dashboard — cross-club reporting for umbrella orgs
 
+### PLATFORM ADMIN & DATA LIFECYCLE
+
+- [x] Reusable deleteOrgs dev script — clear test/demo orgs (backend/scripts/deleteOrgs.js)
+- [ ] Super admin panel — cross-org platform-owner management; proper replacement for the deleteOrgs dev script
+- [ ] Soft-delete for org-facing youth/staff deletion — deletedAt timestamp, filtered from queries, recoverable
+- [ ] Additive re-seed / sync script — push updated defaults to existing orgs without touching their data
+- [ ] Decide seeding strategy — full 52/110 seed vs. starter set + opt-in template library
+
 ### BUSINESS
 
 - [ ] Pricing tiers — Starter ($150), Professional ($300), Enterprise ($500+)
@@ -728,6 +793,7 @@ Key decisions made:
 - Frontend built with React + Vite — fast dev server, standard React toolchain
 - IAM user for daily AWS work — root account reserved for billing and account-level settings
 - Terraform for all infrastructure — reproducible, version controlled, single command provisioning
+- Production data deletion is done via a guarded, reusable dev script (snapshot first, dry run, typed confirmation, FK-safe transaction) — pre-launch only; the long-term answer is an in-app super admin panel + soft-delete
 
 ---
 
@@ -761,6 +827,10 @@ Key decisions made:
 - Use git credential reject to clear cached tokens after regenerating
 - CI runs two independent jobs — lint and docker-build — both must pass for the pipeline to be green
 
+### Git
+
+- A push can silently not happen — if git add/commit/push is run as one block and something fails, the file stays untracked and the branch never reaches GitHub (downstream symptom: `git checkout <branch>` elsewhere fails with `pathspec ... did not match any file(s)`). Run the three commands separately and confirm the `* [new branch] ... -> ...` line prints before assuming the push landed.
+
 ### Vite / Frontend
 
 - npm create vite@latest uses the folder name as given — verify it matches expected name before proceeding
@@ -778,6 +848,23 @@ Key decisions made:
 - AWS CLI and console must be in the same region or resources won't be visible
 - RDS takes 5-10 minutes to become available after creation
 - EC2 public IP changes if instance is stopped and restarted — use Elastic IP for stable addressing
+
+### SSH / EC2 access
+
+- SSH to incentirise.com hangs forever — the domain resolves to the ALB, which doesn't speak SSH. SSH to the instance's public IP directly instead.
+- The instance IP changes when the ASG replaces the node — look it up fresh (aws ec2 describe-instances) each session rather than reusing an old IP.
+- Two instances may be running (incentirise-asg-node, the live one, and incentirise-backend-tf) — confirm which is live via ALB target health before connecting.
+
+### DNS / domain
+
+- DNS_PROBE_FINISHED_NXDOMAIN on a domain that previously worked usually means the registry stopped publishing it, not an app problem — check `aws route53domains get-domain-detail` StatusList for `clientHold`.
+- `clientHold` is most often caused by an unverified registrant contact email (ICANN requirement); verifying the email clears it at the registry within minutes to hours. `clientTransferProhibited` staying in the list is normal/protective.
+
+### Running scripts against prod (Docker / Prisma)
+
+- Prisma v7 throws PrismaClientInitializationError if constructed bare — replicate the app's adapter construction: `new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) })`. Importing index.js to reuse its client boots the whole Express server, so replicate inline instead.
+- `docker cp` needs the destination directory to exist in the container first — run `docker exec <container> mkdir -p /app/scripts` before copying, or the file silently doesn't land where expected.
+- The SSL-mode deprecation warning and NODE_TLS_REJECT_UNAUTHORIZED=0 warning on every prod script run are expected noise from the current RDS setup — ignore.
 
 ### Observability
 
