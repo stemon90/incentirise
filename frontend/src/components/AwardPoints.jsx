@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getYouth, getBehaviors, awardPoints } from "../api";
+import { getYouth, getBehaviors, awardPoints, getMostUsed } from "../api";
 
 function AwardPoints({ staff }) {
   const [youth, setYouth] = useState([]);
@@ -12,16 +12,33 @@ function AwardPoints({ staff }) {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [mostUsed, setMostUsed] = useState([]);
+  const [awarding, setAwarding] = useState(false);
+
+  // Below this many total org awards, show curated defaults instead of real ranking
+  const COLD_START_THRESHOLD = 10;
+
+  // Curated default quick-award deeds for brand-new orgs (matched by name)
+  const DEFAULT_QUICK = [
+    "Signed in today",
+    "Participated in an activity",
+    "Completed homework / Power Hour",
+    "Helped a peer",
+    "Picked up trash",
+    "Showed good sportsmanship",
+  ];
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [youthRes, behaviorsRes] = await Promise.all([
+        const [youthRes, behaviorsRes, mostUsedRes] = await Promise.all([
           getYouth(),
           getBehaviors(),
+          getMostUsed(),
         ]);
         setYouth(youthRes.data);
         setBehaviors(behaviorsRes.data);
+        setMostUsed(mostUsedRes.data);
       } catch (err) {
         setError("Failed to load data");
       }
@@ -46,6 +63,65 @@ function AwardPoints({ staff }) {
   const handleSelectBehavior = (behavior) => {
     setSelectedBehavior(behavior);
     setPoints(behavior.minPoints);
+  };
+
+  // Build the 6 quick-award deeds: curated defaults during cold start, else top-used
+  const quickBehaviors = (() => {
+    if (behaviors.length === 0) return [];
+
+    const useColdStart =
+      !mostUsed.ranking || mostUsed.totalAwards < COLD_START_THRESHOLD;
+
+    if (useColdStart) {
+      // Match curated defaults by name, in order; skip any that don't exist
+      const picks = DEFAULT_QUICK.map((name) =>
+        behaviors.find((b) => b.name === name),
+      ).filter(Boolean);
+      // Backfill from the front of the list if fewer than 6 matched
+      for (const b of behaviors) {
+        if (picks.length >= 6) break;
+        if (!picks.includes(b)) picks.push(b);
+      }
+      return picks.slice(0, 6);
+    }
+
+    // Real ranking: map behaviorId -> behavior, in ranked order
+    const ranked = mostUsed.ranking
+      .map((r) => behaviors.find((b) => b.id === r.behaviorId))
+      .filter(Boolean);
+    return ranked.slice(0, 6);
+  })();
+
+  // Quick award: award a behavior at its minimum immediately (option A)
+  const handleQuickAward = async (behavior) => {
+    if (!selectedYouth) {
+      setError("Select a youth first");
+      return;
+    }
+    if (awarding) return; // guard against double-tap / in-flight request
+
+    setAwarding(true);
+    try {
+      const res = await awardPoints({
+        youthId: selectedYouth.id,
+        behaviorId: behavior.id,
+        points: behavior.minPoints,
+        note: "",
+      });
+      setSuccess(
+        `${behavior.minPoints} pts to ${selectedYouth.firstName} for ${behavior.name}! New total: ${res.data.newPointTotal}`,
+      );
+      setSelectedYouth(null);
+      setSelectedBehavior(null);
+      setPoints(1);
+      setNote("");
+      setSearch("");
+      setError("");
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to award points");
+    } finally {
+      setAwarding(false);
+    }
   };
 
   const handleAward = async () => {
@@ -117,6 +193,29 @@ function AwardPoints({ staff }) {
         {/* Step 2: Select Behavior */}
         <div className="card">
           <h3>2. Select Behavior</h3>
+          {selectedYouth && quickBehaviors.length > 0 && (
+            <div className="quick-award">
+              <div className="quick-award-label">
+                Quick award{" "}
+                {(!mostUsed.ranking ||
+                  mostUsed.totalAwards < COLD_START_THRESHOLD) &&
+                  "(suggested)"}
+              </div>
+              <div className="quick-award-grid">
+                {quickBehaviors.map((b) => (
+                  <button
+                    key={b.id}
+                    className="quick-award-btn"
+                    disabled={awarding}
+                    onClick={() => handleQuickAward(b)}
+                  >
+                    <span className="quick-award-name">{b.name}</span>
+                    <span className="quick-award-pts">+{b.minPoints}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="category-filter">
             {categories.map((cat) => (
               <button

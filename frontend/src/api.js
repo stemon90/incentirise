@@ -42,6 +42,7 @@ export const deleteBehavior = (id) => api.delete(`/behaviors/${id}`);
 export const awardPoints = (data) => api.post("/points/award", data);
 export const getPointHistory = (youthId) =>
   api.get(`/points/history/${youthId}`);
+export const getMostUsed = () => api.get("/points/most-used");
 
 // Prizes
 export const getPrizes = () => api.get("/prizes");

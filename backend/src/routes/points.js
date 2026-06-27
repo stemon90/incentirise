@@ -95,4 +95,35 @@ router.get("/history/:youthId", authenticate, async (req, res) => {
   }
 });
 
+// Get most-used behaviors for this org (by award frequency)
+router.get("/most-used", authenticate, async (req, res) => {
+  try {
+    // Count awards per behavior, scoped to this org's behaviors
+    const grouped = await prisma.pointTransaction.groupBy({
+      by: ["behaviorId"],
+      where: {
+        behavior: { organizationId: req.staff.organizationId },
+      },
+      _count: { behaviorId: true },
+      orderBy: { _count: { behaviorId: "desc" } },
+    });
+
+    const totalAwards = grouped.reduce(
+      (sum, g) => sum + g._count.behaviorId,
+      0,
+    );
+
+    res.json({
+      totalAwards,
+      ranking: grouped.map((g) => ({
+        behaviorId: g.behaviorId,
+        count: g._count.behaviorId,
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch most-used behaviors" });
+  }
+});
+
 export default router;
