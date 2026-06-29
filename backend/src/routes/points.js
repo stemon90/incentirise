@@ -77,8 +77,13 @@ router.post("/award", authenticate, async (req, res) => {
 // Get point history for a youth
 router.get("/history/:youthId", authenticate, async (req, res) => {
   const youthId = parseInt(req.params.youthId);
-
   try {
+    // Verify the youth belongs to this staffer's org before returning history
+    const youth = await prisma.youth.findFirst({
+      where: { id: youthId, organizationId: req.staff.organizationId },
+    });
+    if (!youth) return res.status(404).json({ error: "Youth not found" });
+
     const transactions = await prisma.pointTransaction.findMany({
       where: { youthId },
       include: {

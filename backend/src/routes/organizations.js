@@ -76,8 +76,10 @@ router.post("/register", async (req, res) => {
 // Get all organizations
 router.get("/", authenticate, async (req, res) => {
   try {
-    const orgs = await prisma.organization.findMany();
-    res.json(orgs);
+    const org = await prisma.organization.findUnique({
+      where: { id: req.staff.organizationId },
+    });
+    res.json(org ? [org] : []);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch organizations" });
   }
@@ -88,6 +90,10 @@ router.get("/:id", authenticate, async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
+    // Staff can only fetch their own organization
+    if (id !== req.staff.organizationId) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
     const org = await prisma.organization.findUnique({ where: { id } });
     if (!org) return res.status(404).json({ error: "Organization not found" });
     res.json(org);

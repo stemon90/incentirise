@@ -46,7 +46,9 @@ router.get("/", authenticate, async (req, res) => {
 router.get("/:id", authenticate, async (req, res) => {
   const id = parseInt(req.params.id);
   try {
-    const prize = await prisma.prize.findUnique({ where: { id } });
+    const prize = await prisma.prize.findFirst({
+      where: { id, organizationId: req.staff.organizationId },
+    });
     if (!prize) return res.status(404).json({ error: "Prize not found" });
     res.json(prize);
   } catch (err) {
@@ -60,6 +62,12 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
   const { name, description, pointCost, quantity, requiresAdmin, category } =
     req.body;
   try {
+    // Verify the prize belongs to this staffer's org before updating
+    const existing = await prisma.prize.findFirst({
+      where: { id, organizationId: req.staff.organizationId },
+    });
+    if (!existing) return res.status(404).json({ error: "Prize not found" });
+
     const prize = await prisma.prize.update({
       where: { id },
       data: {
@@ -81,6 +89,12 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
 router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
   try {
+    // Verify the prize belongs to this staffer's org before deleting
+    const existing = await prisma.prize.findFirst({
+      where: { id, organizationId: req.staff.organizationId },
+    });
+    if (!existing) return res.status(404).json({ error: "Prize not found" });
+
     await prisma.prize.delete({ where: { id } });
     res.json({ message: "Prize deleted" });
   } catch (err) {
