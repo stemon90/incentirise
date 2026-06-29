@@ -15,6 +15,4 @@ RUN mkdir -p logs
 # Expose the port the app runs on
 EXPOSE 3000
 # Start the server
-COPY start.sh ./
-RUN chmod +x start.sh
-CMD ["sh", "start.sh"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node src/index.js"]
