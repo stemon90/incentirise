@@ -49,7 +49,9 @@ router.get("/:id", authenticate, async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
-    const youth = await prisma.youth.findUnique({ where: { id } });
+    const youth = await prisma.youth.findFirst({
+      where: { id, organizationId: req.staff.organizationId },
+    });
     if (!youth) return res.status(404).json({ error: "Youth not found" });
     res.json(youth);
   } catch (err) {
@@ -62,7 +64,9 @@ router.get("/qr/:qrCode", authenticate, async (req, res) => {
   const { qrCode } = req.params;
 
   try {
-    const youth = await prisma.youth.findUnique({ where: { qrCode } });
+    const youth = await prisma.youth.findFirst({
+      where: { qrCode, organizationId: req.staff.organizationId },
+    });
     if (!youth) return res.status(404).json({ error: "Youth not found" });
     res.json(youth);
   } catch (err) {
@@ -75,6 +79,12 @@ router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
   const id = parseInt(req.params.id);
 
   try {
+    // Verify the youth belongs to this staffer's org before deleting
+    const existing = await prisma.youth.findFirst({
+      where: { id, organizationId: req.staff.organizationId },
+    });
+    if (!existing) return res.status(404).json({ error: "Youth not found" });
+
     await prisma.youth.delete({ where: { id } });
     res.json({ message: "Youth deleted" });
   } catch (err) {
