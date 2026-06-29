@@ -23,12 +23,9 @@ router.post("/", authenticate, async (req, res) => {
   }
 
   if (minPoints < 1 || maxPoints < minPoints) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "minPoints must be at least 1 and maxPoints must be >= minPoints",
-      });
+    return res.status(400).json({
+      error: "minPoints must be at least 1 and maxPoints must be >= minPoints",
+    });
   }
 
   try {
@@ -74,11 +71,9 @@ router.post("/", authenticate, async (req, res) => {
       });
 
       if (!placeholderBehavior) {
-        return res
-          .status(400)
-          .json({
-            error: "No behaviors exist yet — cannot award provisional points",
-          });
+        return res.status(400).json({
+          error: "No behaviors exist yet — cannot award provisional points",
+        });
       }
 
       const [tx] = await prisma.$transaction([
@@ -145,6 +140,12 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
 
     if (!request)
       return res.status(404).json({ error: "Behavior request not found" });
+
+    // Verify the request belongs to this admin's org
+    if (request.organizationId !== req.staff.organizationId) {
+      return res.status(404).json({ error: "Behavior request not found" });
+    }
+
     if (request.status !== "PENDING") {
       return res
         .status(400)
