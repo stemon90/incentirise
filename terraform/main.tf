@@ -15,6 +15,13 @@ terraform {
   }
 }
 
+locals {
+  selected_subnet_ids = [
+    "subnet-08d6a356583df07c9", # us-east-1f — where the live ASG instance runs
+    "subnet-0d7ce803737622dfd", # us-east-1b — second AZ for ALB's 2-AZ minimum
+  ]
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -125,21 +132,6 @@ resource "aws_db_instance" "postgres" {
   backup_window           = "03:00-04:00"
 }
 
-# ── EC2 ───────────────────────────────────────────────────────────────────────
-
-resource "aws_instance" "backend" {
-  ami             = var.ami_id
-  instance_type   = "t2.micro"
-  key_name        = var.key_name
-  security_groups = [aws_security_group.backend.name]
-
-  user_data = base64encode(file("${path.module}/user_data.sh"))
-
-  tags = {
-    Name = "incentirise-backend-tf"
-  }
-}
-
 # ── Data Sources ──────────────────────────────────────────────────────────────
 
 data "aws_vpc" "default" {
@@ -172,7 +164,7 @@ resource "aws_lb" "backend" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = data.aws_subnets.default.ids
+  subnets            = local.selected_subnet_ids
 }
 
 resource "aws_lb_target_group" "backend" {
@@ -271,7 +263,7 @@ resource "aws_autoscaling_group" "backend" {
   min_size            = 1
   desired_capacity    = 1
   max_size            = 3
-  vpc_zone_identifier = data.aws_subnets.default.ids
+  vpc_zone_identifier = local.selected_subnet_ids
   target_group_arns   = [aws_lb_target_group.frontend.arn]
 
   launch_template {

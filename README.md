@@ -6,6 +6,8 @@ A rewards and accountability platform for afterschool programs, Boys & Girls Clu
 
 **Live:** [incentirise.com](https://incentirise.com)
 
+> **Status: Infrastructure currently dormant to minimize AWS cost while pre-revenue.** Domain and DNS remain active; compute/database/load balancer are torn down via Terraform and rebuildable in ~15 minutes (`terraform apply`) when needed for a demo, interview, or launch. See DEVLOG.md "Cost Teardown — Day 31" for full details and the exact rebuild procedure.
+
 ---
 
 ## Stack

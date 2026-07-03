@@ -267,6 +267,10 @@ Every point transaction is permanently logged with staff, youth, good deed, amou
 
 This section covers platform-owner operations and data deletion — distinct from the org-facing app features above.
 
+## Infrastructure Status
+
+As of Day 31, live infrastructure (EC2/ASG, ALB, RDS) is intentionally torn down to keep AWS costs near-zero (~$1-2/mo, domain only) while pre-revenue and not actively job-searching or demoing. This is a deliberate cost decision, not a product regression — everything is Terraform-managed and rebuildable in ~15 minutes. Rebuild before any customer demo, employer interview, or when returning to active development. See DEVLOG.md for the exact procedure.
+
 ### Current state
 
 There is no in-app deletion flow at all. Org/youth/staff deletion is currently done by hand against the production database. This is acceptable only because the platform is pre-launch with no real customer data; it is not a sustainable approach once real orgs exist.
