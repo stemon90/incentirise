@@ -699,6 +699,59 @@ Key decisions made:
 
 - **Day 28 complete**
 
+### Cost Teardown — Infrastructure → Dormant Mode — Day 31
+
+**Goal:** Kill AWS costs to near-zero while pre-revenue/pre-launch. First bill (June cycle) came to $100.89 — free tier had expired without warning.
+
+**Root cause of the surprise bill:**
+
+- AWS's free tier (12 months on new accounts) had quietly expired; everything started billing at normal rates with no notification
+- Biggest single line item was "Amazon Virtual Private Cloud" ($30.09) — traced to AWS's per-public-IP hourly charge (started Feb 2024, ~$3.65/mo per IP) rather than a NAT Gateway (confirmed none existed). 8 public IPs were in play: 6 from the ALB being spread across all 6 default subnets (leftover from Phase 9), 1 from the live ASG instance, 1 from a second, orphaned EC2 instance
+
+**Found and fixed before the full teardown:**
+
+- Discovered a second EC2 instance (`incentirise-backend-tf`) had existed since early phases, still Terraform-managed but never part of the ASG, doing nothing but costing money and holding a public IP. Destroyed via `terraform destroy -target=aws_instance.backend`, then removed the resource block from `main.tf` and the now-broken `ec2_public_ip` output from `outputs.tf`
+- Narrowed the ALB and ASG from all 6 default subnets down to 2 (the AWS minimum for an ALB), via a new `locals.selected_subnet_ids` block referenced by both `aws_lb.backend.subnets` and `aws_autoscaling_group.backend.vpc_zone_identifier`. Confirmed the live instance's subnet (`us-east-1f`) was one of the 2 kept. Verified zero downtime — `curl -I https://incentirise.com` returned 200 immediately after apply
+- Note: old ALB-owned ENIs in the removed subnets don't release instantly — AWS deprovisions them asynchronously in the background (can take up to ~an hour), this is expected and not something to force
+
+**Full teardown to dormant mode:**
+
+Since there are no real users yet and no plans to job-search or demo immediately, decided to go further than cost-trimming — full teardown of everything except the domain itself, to be rebuilt via Terraform when actually needed for a demo or launch.
+
+Destroyed via one targeted `terraform destroy` (13 resources, RDS `skip_final_snapshot = true` so no backup taken — confirmed acceptable, no real user data existed):
+
+- ASG, launch template, scale-out policy
+- ALB, both listeners (HTTP redirect + HTTPS), both target groups (backend + frontend)
+- RDS instance
+- All three security groups (backend, ALB, db)
+- Route 53 A record (expected — it's an alias to the ALB, has to go when the ALB does)
+
+**Preserved (survives, low/no cost):**
+
+- Route 53 hosted zone + domain registration (incentirise.com)
+- ACM certificate — has `prevent_destroy` in Terraform, couldn't be destroyed even by accident
+- Terraform state (S3 + DynamoDB) — untouched, this is how rebuild stays easy
+- AWS Secrets Manager secret `incentirise/env` was NOT kept — deleted via `aws secretsmanager delete-secret --secret-id incentirise/env --recovery-window-in-days 7` (7-day recovery window instead of the 30-day default, so it actually stops billing quickly instead of lingering a month). Scheduled deletion date: 2026-07-10. Recoverable via `aws secretsmanager restore-secret --secret-id incentirise/env` until that date; after that, gone for good.
+
+**New monthly cost: ~$1-2 (domain + hosted zone only), down from $100.89.**
+
+**REBUILD PROCEDURE (do this when ready to demo to customers or employers):**
+
+1. `cd ~/projects/incentirise/terraform && terraform apply` — recreates all 13 destroyed resources. RDS is the slow part (~5-10 min), rest is faster. ~15 min total.
+2. Visit incentirise.com → "Get Started" → register a fresh org. Auto-seed fires immediately (52 good deeds, 110 prizes) — no manual data restore needed, there was nothing real to restore.
+3. Confirm `curl -I https://incentirise.com` returns 200 before considering it demo-ready.
+4. Recreate the Secrets Manager secret first — it was deleted (not kept) during teardown: `aws secretsmanager create-secret --name incentirise/env --secret-string '{"DB_PASSWORD":"...","JWT_SECRET":"...","VITE_API_URL":"...","RDS_ENDPOINT":"..."}' --region us-east-1`. Do this BEFORE `terraform apply`, since `user_data.sh` reads from this secret at instance boot — if it's missing, new EC2 instances will fail to start correctly.
+
+**Known gotchas from this session:**
+
+- AWS CLI v2 pipes long output through a pager by default, silently truncating anything copy-pasted before scrolling fully — fix is `export AWS_PAGER=""` (added to `~/.bashrc`)
+- `terraform plan` only previews; `terraform apply` is what actually prompts for `yes` and executes — easy to conflate these when reading Terraform docs quickly
+- A `locals {}` block cannot live nested inside the `terraform {}` block — it's a sibling top-level block. Nesting it there throws "Unsupported block type"
+
+**Known follow-up (unrelated to this session, still open):** redemptions page prompted "save before closing" — possible sign the redemption duplicate-click / unsaved-state bug class extends further than known. Check next time in the app code.
+
+- **Day 31 complete — infrastructure now dormant, ~$1-2/mo**
+
 ---
 
 ## Product Roadmap
